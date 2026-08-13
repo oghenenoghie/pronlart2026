@@ -3,14 +3,35 @@
  * scripts run standalone via `tsx`, outside the app's request lifecycle.
  */
 
+import { readFileSync } from "node:fs";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "../../types/supabase";
 
+/**
+ * Minimal, dependency-free .env.local reader — doesn't rely on
+ * process.loadEnvFile (Node 20.6+/21.7+ only) so it works on any Node LTS.
+ * Doesn't override variables already set in the real environment.
+ */
 export function loadLocalEnv(): void {
+  let contents: string;
   try {
-    process.loadEnvFile(".env.local");
+    contents = readFileSync(".env.local", "utf8");
   } catch {
-    // no .env.local — fall back to whatever is already in the environment
+    return; // no .env.local — fall back to whatever is already in the environment
+  }
+
+  for (const line of contents.split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const eq = trimmed.indexOf("=");
+    if (eq === -1) continue;
+
+    const key = trimmed.slice(0, eq).trim();
+    let value = trimmed.slice(eq + 1).trim();
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
+    }
+    if (!(key in process.env)) process.env[key] = value;
   }
 }
 
