@@ -9,6 +9,7 @@ import { MOCK_ARTWORKS } from "@/lib/mock-data";
 
 export type ArtworkFilters = {
   movement?: string;
+  artist?: string;
   status?: ArtworkStatus;
   sort?: "newest" | "price-asc" | "price-desc" | "artist";
 };
@@ -18,6 +19,9 @@ export async function listArtworks(filters: ArtworkFilters = {}): Promise<Artwor
 
   if (filters.movement) {
     results = results.filter((a) => a.movement.slug === filters.movement);
+  }
+  if (filters.artist) {
+    results = results.filter((a) => a.artist.slug === filters.artist);
   }
   if (filters.status) {
     results = results.filter((a) => a.status === filters.status);

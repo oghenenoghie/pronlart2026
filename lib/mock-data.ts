@@ -22,6 +22,7 @@ const ARTISTS: Record<string, Artist> = {
     slug: "amara-okafor",
     name: "Amara Okafor",
     statement: "Working between figuration and memory.",
+    bio: "Amara Okafor paints from memory rather than reference, building each canvas from the residue of a scene rather than its likeness. Her work has shown in group exhibitions across Lagos and London.",
     status: "active",
   },
   lucien: {
@@ -29,6 +30,7 @@ const ARTISTS: Record<string, Artist> = {
     slug: "lucien-vasseur",
     name: "Lucien Vasseur",
     statement: "A study of light as it falls, not as it's remembered.",
+    bio: "Lucien Vasseur trained in the classical tradition before turning to the coast, where he now paints outdoors in a single sitting whenever the light allows. His interiors and harbours share a quiet, observational patience.",
     status: "active",
   },
   ines: {
@@ -36,6 +38,7 @@ const ARTISTS: Record<string, Artist> = {
     slug: "ines-moretti",
     name: "Inès Moretti",
     statement: "Bronze as a record of the hand that shaped it.",
+    bio: "Inès Moretti works across bronze and marble, favouring direct carving and hand-patination over maquettes and moulds. Each piece keeps visible trace of the process that made it.",
     status: "active",
   },
   tomas: {
@@ -43,9 +46,16 @@ const ARTISTS: Record<string, Artist> = {
     slug: "tomas-eriksson",
     name: "Tomas Eriksson",
     statement: "Geometry borrowed from the built world.",
+    bio: "Tomas Eriksson draws on architecture and industrial form, working across oil painting and carved wood to find the geometry underneath a subject.",
     status: "active",
   },
 };
+
+export const MOCK_ARTISTS: Artist[] = Object.values(ARTISTS);
+
+export function getArtistBySlug(slug: string): Artist | undefined {
+  return MOCK_ARTISTS.find((a) => a.slug === slug);
+}
 
 export const MOCK_ARTWORKS: Artwork[] = [
   {
@@ -200,4 +210,9 @@ export function getArtworkBySlug(slug: string): Artwork | undefined {
 export const MOVEMENTS_WITH_COUNTS = MOVEMENTS.map((movement) => ({
   ...movement,
   artworkCount: MOCK_ARTWORKS.filter((a) => a.movement.slug === movement.slug).length,
+}));
+
+export const ARTISTS_WITH_COUNTS = MOCK_ARTISTS.map((artist) => ({
+  ...artist,
+  artworkCount: MOCK_ARTWORKS.filter((a) => a.artist.slug === artist.slug).length,
 }));
