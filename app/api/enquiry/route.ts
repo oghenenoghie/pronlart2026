@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getArtworkBySlug } from "@/lib/mock-data";
+import { getArtwork } from "@/lib/data";
 import type { EnquiryInput } from "@/types";
 
 export async function POST(request: Request) {
@@ -15,7 +15,7 @@ export async function POST(request: Request) {
   if (type !== "purchase" && type !== "enquiry") {
     return NextResponse.json({ error: "type must be 'purchase' or 'enquiry'." }, { status: 400 });
   }
-  if (!artworkSlug || !getArtworkBySlug(artworkSlug)) {
+  if (!artworkSlug || !(await getArtwork(artworkSlug))) {
     return NextResponse.json({ error: "Unknown artwork." }, { status: 400 });
   }
   if (!name?.trim() || !email?.trim()) {

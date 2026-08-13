@@ -197,7 +197,3 @@ export function getFeaturedArtworks(): Artwork[] {
   return MOCK_ARTWORKS.filter((a) => a.featured);
 }
 
-export function getArtworkBySlug(slug: string): Artwork | undefined {
-  return MOCK_ARTWORKS.find((a) => a.slug === slug);
-}
-
