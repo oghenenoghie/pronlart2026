@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { SellForm } from "@/components/forms/SellForm";
-import { listMovements } from "@/lib/data";
+import { listMediums, listMovements } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Sell",
@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default async function SellPage() {
-  const movements = await listMovements();
+  const [movements, mediums] = await Promise.all([listMovements(), listMediums()]);
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-16">
@@ -17,7 +17,7 @@ export default async function SellPage() {
         Submit an original work for consideration. We review every submission and follow up by email.
       </p>
 
-      <SellForm movements={movements} />
+      <SellForm movements={movements} mediums={mediums} />
     </div>
   );
 }

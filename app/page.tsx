@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { Reveal } from "@/components/motion/Reveal";
 import { ExhibitionScroll } from "@/components/exhibition/ExhibitionScroll";
-import { getFeaturedArtworks } from "@/lib/mock-data";
+import { listArtworks } from "@/lib/data";
 
-export default function Home() {
-  const featured = getFeaturedArtworks();
+export default async function Home() {
+  const featured = await listArtworks({ featured: true, sort: "newest" });
 
   return (
     <main>
@@ -36,7 +36,7 @@ export default function Home() {
         </Reveal>
       </section>
 
-      <ExhibitionScroll works={featured} />
+      {featured.length > 0 && <ExhibitionScroll works={featured} />}
 
       <section className="mx-auto max-w-6xl border-t border-line px-6 py-16 text-center">
         <Link

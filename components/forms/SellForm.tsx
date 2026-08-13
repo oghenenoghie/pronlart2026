@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import type { Movement } from "@/types";
+import type { Medium, Movement } from "@/types";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
-export function SellForm({ movements }: { movements: Movement[] }) {
+export function SellForm({ movements, mediums }: { movements: Movement[]; mediums: Medium[] }) {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -118,14 +118,22 @@ export function SellForm({ movements }: { movements: Movement[] }) {
           <label htmlFor="medium" className="font-body text-label uppercase tracking-[0.18em] text-ash">
             Medium
           </label>
-          <input
+          <select
             id="medium"
             name="medium"
-            type="text"
             required
-            placeholder="e.g. Oil on canvas"
-            className="mt-2 w-full border border-line bg-ink px-3 py-2 font-body text-sm text-gesso placeholder:text-ash/60 focus:border-gilt focus:outline-none"
-          />
+            defaultValue=""
+            className="mt-2 w-full border border-line bg-ink px-3 py-2 font-body text-sm text-gesso focus:border-gilt focus:outline-none"
+          >
+            <option value="" disabled className="bg-ink text-ash">
+              Select a medium
+            </option>
+            {mediums.map((medium) => (
+              <option key={medium.slug} value={medium.slug} className="bg-ink text-gesso">
+                {medium.name}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
