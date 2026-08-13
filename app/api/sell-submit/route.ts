@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getMovement } from "@/lib/data";
+import { getMedium, getMovement } from "@/lib/data";
 import type { SellSubmissionInput } from "@/types";
 
 export async function POST(request: Request) {
@@ -21,8 +21,11 @@ export async function POST(request: Request) {
   if (!movement || !(await getMovement(movement))) {
     return NextResponse.json({ error: "Unknown movement." }, { status: 400 });
   }
-  if (!medium?.trim() || !dimensions?.trim()) {
-    return NextResponse.json({ error: "Medium and dimensions are required." }, { status: 400 });
+  if (!medium || !(await getMedium(medium))) {
+    return NextResponse.json({ error: "Unknown medium." }, { status: 400 });
+  }
+  if (!dimensions?.trim()) {
+    return NextResponse.json({ error: "Dimensions are required." }, { status: 400 });
   }
 
   // TODO(build order step 2/7): upload images to Supabase Storage, insert

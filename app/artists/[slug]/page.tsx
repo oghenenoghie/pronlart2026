@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArtworkCard } from "@/components/art/ArtworkCard";
-import { getArtistBySlug } from "@/lib/mock-data";
-import { listArtworks } from "@/lib/data";
+import { getArtist, listArtworks } from "@/lib/data";
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const artist = getArtistBySlug(params.slug);
+  const artist = await getArtist(params.slug);
   if (!artist) return {};
   return {
     title: artist.name,
@@ -14,7 +13,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 export default async function ArtistPage({ params }: { params: { slug: string } }) {
-  const artist = getArtistBySlug(params.slug);
+  const artist = await getArtist(params.slug);
   if (!artist) notFound();
 
   const artworks = await listArtworks({ artist: artist.slug });

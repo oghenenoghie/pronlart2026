@@ -1,15 +1,18 @@
-import type { Artwork, ArtworkStatus, Movement } from "@/types";
+import type { Artist, Artwork, ArtworkStatus, Medium, Movement } from "@/types";
 import { MOCK_ARTWORKS } from "@/lib/mock-data";
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/supabase";
 
 /**
- * Data-access seam. Movements are live from Supabase; artworks still read
- * from the in-repo mock catalogue until real rows exist — swap listArtworks
- * and getArtwork for Supabase queries the same way once they do.
+ * Data-access seam. Movements, artists and mediums are live from Supabase;
+ * artworks still read from the in-repo mock catalogue until real rows exist
+ * — swap listArtworks and getArtwork for Supabase queries the same way once
+ * they do.
  */
 
 type MovementRow = Database["public"]["Tables"]["movements"]["Row"];
+type ArtistRow = Database["public"]["Tables"]["artists"]["Row"];
+type MediumRow = Database["public"]["Tables"]["mediums"]["Row"];
 
 function toMovement(row: MovementRow): Movement {
   return {
@@ -46,6 +49,65 @@ export async function listMovementsWithCounts(): Promise<MovementWithCount[]> {
     ...movement,
     artworkCount: MOCK_ARTWORKS.filter((a) => a.movement.slug === movement.slug).length,
   }));
+}
+
+function toArtist(row: ArtistRow): Artist {
+  return {
+    id: row.id,
+    slug: row.slug,
+    name: row.name,
+    portrait: row.portrait ?? undefined,
+    statement: row.statement ?? undefined,
+    bio: row.bio ?? undefined,
+    links: (row.links as Record<string, string>) ?? undefined,
+    status: row.status,
+  };
+}
+
+export async function listArtists(): Promise<Artist[]> {
+  const supabase = createClient();
+  const { data, error } = await supabase.from("artists").select("*").order("name", { ascending: true });
+  if (error) throw error;
+  return (data ?? []).map(toArtist);
+}
+
+export async function getArtist(slug: string): Promise<Artist | undefined> {
+  const supabase = createClient();
+  const { data, error } = await supabase.from("artists").select("*").eq("slug", slug).maybeSingle();
+  if (error) throw error;
+  return data ? toArtist(data) : undefined;
+}
+
+export type ArtistWithCount = Artist & { artworkCount: number };
+
+export async function listArtistsWithCounts(): Promise<ArtistWithCount[]> {
+  const artists = await listArtists();
+  return artists.map((artist) => ({
+    ...artist,
+    artworkCount: MOCK_ARTWORKS.filter((a) => a.artist.slug === artist.slug).length,
+  }));
+}
+
+function toMedium(row: MediumRow): Medium {
+  return {
+    id: row.id,
+    slug: row.slug,
+    name: row.name,
+  };
+}
+
+export async function listMediums(): Promise<Medium[]> {
+  const supabase = createClient();
+  const { data, error } = await supabase.from("mediums").select("*").order("name", { ascending: true });
+  if (error) throw error;
+  return (data ?? []).map(toMedium);
+}
+
+export async function getMedium(slug: string): Promise<Medium | undefined> {
+  const supabase = createClient();
+  const { data, error } = await supabase.from("mediums").select("*").eq("slug", slug).maybeSingle();
+  if (error) throw error;
+  return data ? toMedium(data) : undefined;
 }
 
 export type ArtworkFilters = {

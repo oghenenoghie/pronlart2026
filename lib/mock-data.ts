@@ -51,12 +51,6 @@ const ARTISTS: Record<string, Artist> = {
   },
 };
 
-export const MOCK_ARTISTS: Artist[] = Object.values(ARTISTS);
-
-export function getArtistBySlug(slug: string): Artist | undefined {
-  return MOCK_ARTISTS.find((a) => a.slug === slug);
-}
-
 export const MOCK_ARTWORKS: Artwork[] = [
   {
     id: "1",
@@ -207,7 +201,3 @@ export function getArtworkBySlug(slug: string): Artwork | undefined {
   return MOCK_ARTWORKS.find((a) => a.slug === slug);
 }
 
-export const ARTISTS_WITH_COUNTS = MOCK_ARTISTS.map((artist) => ({
-  ...artist,
-  artworkCount: MOCK_ARTWORKS.filter((a) => a.artist.slug === artist.slug).length,
-}));
