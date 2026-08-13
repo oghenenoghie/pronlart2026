@@ -3,8 +3,9 @@
  * ----------------------------------------------------------------------------
  * Seeds real artwork rows from The Met's Open Access (CC0) collection into the
  * gallery's actual schema: uploads each image to the `artworks` Storage bucket,
- * resolves/creates the artist and medium rows, maps the work onto one of the
- * 13 seeded movements, then upserts into public.artworks.
+ * resolves/creates the artist and medium rows (attempting a real, verified
+ * public-domain portrait for newly-created artists via Wikidata), maps the
+ * work onto one of the 13 seeded movements, then upserts into public.artworks.
  *
  *   fetch (Met search + object) → download image → probe dimensions
  *     → upload to Storage → resolve artist/movement/medium → upsert artworks row
@@ -18,25 +19,26 @@
  *   SUPABASE_SERVICE_ROLE_KEY=eyJ...        # service role — bypasses RLS + Storage RLS
  *
  * Optional env:
- *   SEED_QUERY=painting        # Met search term
- *   SEED_LIMIT=40              # how many artworks to seed
+ *   SEED_QUERY=painting,sculpture,bronze   # comma-separated Met search terms
+ *   SEED_LIMIT=40              # how many artworks to seed, per query
  *   SEED_HIGHLIGHTS=true       # restrict to Met "highlights" (famous, gallery-grade)
  *   SEED_DEPARTMENT_ID=        # e.g. 11 = European Paintings (blank = all)
  */
 
-import { createClient } from "@supabase/supabase-js";
 import imageSize from "image-size";
-import type { Database } from "../types/supabase";
+import {
+  createSeedClient,
+  downloadImage,
+  extensionForContentType,
+  loadLocalEnv,
+  resolveWikidataPortrait,
+  slugify,
+  sleep,
+} from "./lib/seed-helpers";
 
-try {
-  process.loadEnvFile(".env.local");
-} catch {
-  // no .env.local — fall back to whatever is already in the environment
-}
+loadLocalEnv();
 
-const SUPABASE_URL = required("NEXT_PUBLIC_SUPABASE_URL");
-const SERVICE_KEY = required("SUPABASE_SERVICE_ROLE_KEY");
-const QUERY = process.env.SEED_QUERY ?? "painting";
+const QUERIES = (process.env.SEED_QUERY ?? "painting").split(",").map((q) => q.trim()).filter(Boolean);
 const LIMIT = Number(process.env.SEED_LIMIT ?? 40);
 const HIGHLIGHTS = (process.env.SEED_HIGHLIGHTS ?? "true") === "true";
 const DEPARTMENT_ID = process.env.SEED_DEPARTMENT_ID ?? "";
@@ -45,9 +47,7 @@ const BUCKET = "artworks";
 const MET = "https://collectionapi.metmuseum.org/public/collection/v1";
 const DEFAULT_CURRENCY = "NGN";
 
-const supabase = createClient<Database>(SUPABASE_URL, SERVICE_KEY, {
-  auth: { persistSession: false },
-});
+const supabase = createSeedClient();
 
 // ── Met API types (only the fields we use) ───────────────────────────────────
 interface MetSearch {
@@ -70,16 +70,33 @@ interface MetObject {
 
 // ── Main ─────────────────────────────────────────────────────────────────────
 async function main() {
-  console.log(`\nSeeding "${QUERY}" — target ${LIMIT} artworks\n`);
+  console.log(`\nSeeding [${QUERIES.join(", ")}] — target ${LIMIT} artworks per query\n`);
 
   const movementIdBySlug = await loadMovements();
   const artistIdBySlug = new Map<string, string>();
   const mediumIdBySlug = new Map<string, string>();
 
-  const ids = await searchObjectIds();
+  let totalSeeded = 0;
+  for (const query of QUERIES) {
+    const seeded = await seedQuery(query, movementIdBySlug, artistIdBySlug, mediumIdBySlug);
+    totalSeeded += seeded;
+  }
+
+  console.log(`\nDone. Seeded ${totalSeeded} artworks into "${BUCKET}" + public.artworks.`);
+}
+
+async function seedQuery(
+  query: string,
+  movementIdBySlug: Map<string, string>,
+  artistIdBySlug: Map<string, string>,
+  mediumIdBySlug: Map<string, string>
+): Promise<number> {
+  console.log(`\n— "${query}" —`);
+
+  const ids = await searchObjectIds(query);
   if (ids.length === 0) {
-    console.error("No object IDs returned from Met search. Try a different SEED_QUERY.");
-    process.exit(1);
+    console.warn(`No object IDs returned for "${query}". Skipping.`);
+    return 0;
   }
 
   let seeded = 0;
@@ -95,13 +112,13 @@ async function main() {
       if (!movementId) throw new Error("no movement resolved (should be unreachable)");
       const mediumId = await getOrCreateMedium(obj.medium || "Mixed media", mediumIdBySlug);
 
-      const bytes = await downloadImage(obj.primaryImage);
+      const { bytes, contentType } = await downloadImage(obj.primaryImage);
       const { width, height } = imageSize(bytes);
-      const storagePath = `the-met/${obj.objectID}.jpg`;
+      const storagePath = `the-met/${obj.objectID}.${extensionForContentType(contentType)}`;
 
       const { error: upErr } = await supabase.storage
         .from(BUCKET)
-        .upload(storagePath, bytes, { contentType: "image/jpeg", upsert: true });
+        .upload(storagePath, bytes, { contentType, upsert: true });
       if (upErr) throw new Error(`storage upload: ${upErr.message}`);
 
       const slug = `${slugify(obj.title || "untitled")}-${obj.objectID}`;
@@ -143,7 +160,7 @@ async function main() {
     await sleep(150); // be polite to the Met API
   }
 
-  console.log(`\nDone. Seeded ${seeded} artworks into "${BUCKET}" + public.artworks.`);
+  return seeded;
 }
 
 // ── Resolvers ────────────────────────────────────────────────────────────────
@@ -182,7 +199,34 @@ async function getOrCreateArtist(name: string, cache: Map<string, string>): Prom
     .single();
   if (insErr) throw new Error(`creating artist ${slug}: ${insErr.message}`);
   cache.set(slug, inserted.id);
+
+  await attachPortrait(inserted.id, slug, name);
+
   return inserted.id;
+}
+
+async function attachPortrait(artistId: string, artistSlug: string, name: string): Promise<void> {
+  if (name === "Unknown artist") return;
+
+  const portrait = await resolveWikidataPortrait(name);
+  if (!portrait) return;
+
+  const path = `artist-portraits/${artistSlug}.${extensionForContentType(portrait.contentType)}`;
+  const { error: upErr } = await supabase.storage
+    .from(BUCKET)
+    .upload(path, portrait.bytes, { contentType: portrait.contentType, upsert: true });
+  if (upErr) {
+    console.warn(`  (portrait upload failed for ${name}: ${upErr.message})`);
+    return;
+  }
+
+  const { error: updErr } = await supabase.from("artists").update({ portrait: path }).eq("id", artistId);
+  if (updErr) {
+    console.warn(`  (portrait link failed for ${name}: ${updErr.message})`);
+    return;
+  }
+
+  console.log(`  ↳ portrait resolved for ${name}`);
 }
 
 async function getOrCreateMedium(name: string, cache: Map<string, string>): Promise<string> {
@@ -236,10 +280,10 @@ function pickMovementSlug(obj: MetObject): string {
   return "contemporary-art";
 }
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
+// ── Met API helpers ──────────────────────────────────────────────────────────
 
-async function searchObjectIds(): Promise<number[]> {
-  const params = new URLSearchParams({ q: QUERY, hasImages: "true" });
+async function searchObjectIds(query: string): Promise<number[]> {
+  const params = new URLSearchParams({ q: query, hasImages: "true" });
   if (HIGHLIGHTS) params.set("isHighlight", "true");
   if (DEPARTMENT_ID) params.set("departmentId", DEPARTMENT_ID);
 
@@ -254,33 +298,6 @@ async function fetchObject(id: number): Promise<MetObject | null> {
   if (!res.ok) return null;
   return (await res.json()) as MetObject;
 }
-
-async function downloadImage(url: string): Promise<Buffer> {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`image download: ${res.status}`);
-  return Buffer.from(await res.arrayBuffer());
-}
-
-function slugify(text: string): string {
-  return text
-    .normalize("NFKD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 80);
-}
-
-function required(name: string): string {
-  const v = process.env[name];
-  if (!v) {
-    console.error(`Missing env var: ${name}`);
-    process.exit(1);
-  }
-  return v;
-}
-
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 main().catch((err) => {
   console.error(err);
