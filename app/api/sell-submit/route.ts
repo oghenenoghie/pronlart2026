@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getMovementBySlug } from "@/lib/movements";
+import { getMovement } from "@/lib/data";
 import type { SellSubmissionInput } from "@/types";
 
 export async function POST(request: Request) {
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
   if (!title?.trim()) {
     return NextResponse.json({ error: "Title is required." }, { status: 400 });
   }
-  if (!movement || !getMovementBySlug(movement)) {
+  if (!movement || !(await getMovement(movement))) {
     return NextResponse.json({ error: "Unknown movement." }, { status: 400 });
   }
   if (!medium?.trim() || !dimensions?.trim()) {

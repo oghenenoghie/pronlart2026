@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArtworkCard } from "@/components/art/ArtworkCard";
-import { getMovementBySlug } from "@/lib/movements";
-import { listArtworks } from "@/lib/data";
+import { getMovement, listArtworks } from "@/lib/data";
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const movement = getMovementBySlug(params.slug);
+  const movement = await getMovement(params.slug);
   if (!movement) return {};
   return {
     title: movement.name,
@@ -14,7 +13,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 export default async function MovementPage({ params }: { params: { slug: string } }) {
-  const movement = getMovementBySlug(params.slug);
+  const movement = await getMovement(params.slug);
   if (!movement) notFound();
 
   const artworks = await listArtworks({ movement: movement.slug });

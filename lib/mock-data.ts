@@ -1,5 +1,5 @@
 import type { Artist, Artwork, Medium } from "@/types";
-import { MOVEMENTS, getMovementBySlug } from "@/lib/movements";
+import { getMovementBySlug } from "@/lib/movements";
 
 /**
  * Placeholder catalogue for building the UI before Supabase is wired up
@@ -206,11 +206,6 @@ export function getFeaturedArtworks(): Artwork[] {
 export function getArtworkBySlug(slug: string): Artwork | undefined {
   return MOCK_ARTWORKS.find((a) => a.slug === slug);
 }
-
-export const MOVEMENTS_WITH_COUNTS = MOVEMENTS.map((movement) => ({
-  ...movement,
-  artworkCount: MOCK_ARTWORKS.filter((a) => a.movement.slug === movement.slug).length,
-}));
 
 export const ARTISTS_WITH_COUNTS = MOCK_ARTISTS.map((artist) => ({
   ...artist,

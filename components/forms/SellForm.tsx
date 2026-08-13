@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { MOVEMENTS } from "@/lib/movements";
+import type { Movement } from "@/types";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
-export function SellForm() {
+export function SellForm({ movements }: { movements: Movement[] }) {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -107,7 +107,7 @@ export function SellForm() {
             <option value="" disabled className="bg-ink text-ash">
               Select a movement
             </option>
-            {MOVEMENTS.map((movement) => (
+            {movements.map((movement) => (
               <option key={movement.slug} value={movement.slug} className="bg-ink text-gesso">
                 {movement.name}
               </option>
