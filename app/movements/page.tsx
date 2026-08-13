@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { MOVEMENTS_WITH_COUNTS } from "@/lib/mock-data";
+import { listMovementsWithCounts } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Movements",
   description: "Thirteen movements, from Renaissance to Bronze — the classes that curate every work in the gallery.",
 };
 
-export default function MovementsPage() {
-  const movements = [...MOVEMENTS_WITH_COUNTS].sort((a, b) => a.sort - b.sort);
+export default async function MovementsPage() {
+  const movements = (await listMovementsWithCounts()).sort((a, b) => a.sort - b.sort);
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-16">

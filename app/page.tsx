@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Reveal } from "@/components/motion/Reveal";
-import { ArtworkCard } from "@/components/art/ArtworkCard";
+import { ExhibitionScroll } from "@/components/exhibition/ExhibitionScroll";
 import { getFeaturedArtworks } from "@/lib/mock-data";
 
 export default function Home() {
@@ -36,22 +36,15 @@ export default function Home() {
         </Reveal>
       </section>
 
-      <section className="mx-auto max-w-6xl border-t border-line px-6 py-20">
-        <Reveal>
-          <div className="flex items-baseline justify-between">
-            <h2 className="font-display text-h2 italic text-gesso">Featured works</h2>
-            <Link href="/gallery" className="font-body text-label uppercase tracking-[0.18em] text-ash hover:text-gesso">
-              View all
-            </Link>
-          </div>
-        </Reveal>
-        <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-          {featured.map((artwork) => (
-            <Reveal key={artwork.id}>
-              <ArtworkCard artwork={artwork} />
-            </Reveal>
-          ))}
-        </div>
+      <ExhibitionScroll works={featured} />
+
+      <section className="mx-auto max-w-6xl border-t border-line px-6 py-16 text-center">
+        <Link
+          href="/gallery"
+          className="font-body text-label uppercase tracking-[0.18em] text-ash transition-colors hover:text-gesso"
+        >
+          View the full gallery →
+        </Link>
       </section>
     </main>
   );

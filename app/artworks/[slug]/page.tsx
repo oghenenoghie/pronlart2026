@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArtworkImage } from "@/components/art/ArtworkImage";
 import { StatusChip } from "@/components/art/StatusChip";
-import { formatPrice } from "@/lib/money";
+import { EnquireSection } from "@/components/art/EnquireSection";
 import { getArtwork } from "@/lib/data";
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
@@ -18,8 +18,6 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 export default async function ArtworkDetailPage({ params }: { params: { slug: string } }) {
   const artwork = await getArtwork(params.slug);
   if (!artwork) notFound();
-
-  const canTransact = artwork.status === "available";
 
   return (
     <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-6 py-16 md:grid-cols-2">
@@ -70,17 +68,12 @@ export default async function ArtworkDetailPage({ params }: { params: { slug: st
 
         <p className="mt-6 font-body leading-relaxed text-ash">{artwork.description}</p>
 
-        <div className="mt-8 flex items-center gap-6">
-          <p className="font-body text-lg font-medium text-gesso">
-            {formatPrice(artwork.price, artwork.currency)}
-          </p>
-          <button
-            disabled={!canTransact}
-            className="border border-gilt px-6 py-2.5 font-body text-label uppercase tracking-[0.18em] text-gesso transition-colors hover:bg-gilt hover:text-ink disabled:cursor-not-allowed disabled:border-line disabled:text-ash disabled:hover:bg-transparent"
-          >
-            {artwork.price === null ? "Enquire" : canTransact ? "Buy or enquire" : "Unavailable"}
-          </button>
-        </div>
+        <EnquireSection
+          artworkSlug={artwork.slug}
+          price={artwork.price}
+          currency={artwork.currency}
+          status={artwork.status}
+        />
       </div>
     </div>
   );

@@ -55,3 +55,26 @@ export type Artwork = {
   images: ArtworkImage[];
   featured: boolean;
 };
+
+export type EnquiryType = "purchase" | "enquiry";
+
+export type EnquiryInput = {
+  type: EnquiryType;
+  artworkSlug: string;
+  name: string;
+  email: string;
+  message?: string;
+  /** integer minor units; only meaningful for an offer against a POA work */
+  offer?: number;
+};
+
+export type SellSubmissionInput = {
+  artistName: string;
+  artistEmail: string;
+  title: string;
+  movement: string;
+  medium: string;
+  dimensions: string;
+  askingPrice?: string;
+  message?: string;
+};
