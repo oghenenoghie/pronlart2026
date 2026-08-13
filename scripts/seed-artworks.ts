@@ -23,6 +23,8 @@
  *   SEED_LIMIT=40              # how many artworks to seed, per query
  *   SEED_HIGHLIGHTS=true       # restrict to Met "highlights" (famous, gallery-grade)
  *   SEED_DEPARTMENT_ID=        # e.g. 11 = European Paintings (blank = all)
+ *   SEED_FEATURED_PER_QUERY=2  # how many of each query's first results to mark
+ *                              # featured=true, for the home page exhibition
  */
 
 import imageSize from "image-size";
@@ -42,6 +44,7 @@ const QUERIES = (process.env.SEED_QUERY ?? "painting").split(",").map((q) => q.t
 const LIMIT = Number(process.env.SEED_LIMIT ?? 40);
 const HIGHLIGHTS = (process.env.SEED_HIGHLIGHTS ?? "true") === "true";
 const DEPARTMENT_ID = process.env.SEED_DEPARTMENT_ID ?? "";
+const FEATURED_PER_QUERY = Number(process.env.SEED_FEATURED_PER_QUERY ?? 2);
 
 const BUCKET = "artworks";
 const MET = "https://collectionapi.metmuseum.org/public/collection/v1";
@@ -137,7 +140,7 @@ async function seedQuery(
           price: null,
           currency: DEFAULT_CURRENCY,
           status: "available",
-          featured: false,
+          featured: seeded < FEATURED_PER_QUERY,
           images: [
             {
               path: storagePath,

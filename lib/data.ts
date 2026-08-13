@@ -132,6 +132,7 @@ export type ArtworkFilters = {
   movement?: string;
   artist?: string;
   status?: ArtworkStatus;
+  featured?: boolean;
   sort?: "newest" | "price-asc" | "price-desc" | "artist";
 };
 
@@ -165,6 +166,7 @@ export async function listArtworks(filters: ArtworkFilters = {}): Promise<Artwor
   if (filters.movement) query = query.eq("movement.slug", filters.movement);
   if (filters.artist) query = query.eq("artist.slug", filters.artist);
   if (filters.status) query = query.eq("status", filters.status);
+  if (filters.featured !== undefined) query = query.eq("featured", filters.featured);
 
   switch (filters.sort) {
     case "price-asc":
