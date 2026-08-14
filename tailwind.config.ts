@@ -24,6 +24,7 @@ const config: Config = {
         "display-xl": ["clamp(3rem, 8vw, 7rem)", { lineHeight: "1.05" }],
         "display-lg": ["clamp(2rem, 5vw, 4rem)", { lineHeight: "1.1" }],
         h2: ["clamp(1.5rem, 3vw, 2.25rem)", { lineHeight: "1.2" }],
+        h3: ["1.25rem", { lineHeight: "1.3" }],
         lede: ["1.25rem", { lineHeight: "1.7" }],
         label: ["0.75rem", { letterSpacing: "0.18em", lineHeight: "1" }],
         placard: ["0.875rem", { lineHeight: "1.5" }],
