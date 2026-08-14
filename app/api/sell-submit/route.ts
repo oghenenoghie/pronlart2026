@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { getMedium, getMovement } from "@/lib/data";
+import { createSellSubmission, getMedium, getMovement } from "@/lib/data";
+import { parseToMinorUnits } from "@/lib/money";
 import type { SellSubmissionInput } from "@/types";
 
 export async function POST(request: Request) {
@@ -18,20 +19,30 @@ export async function POST(request: Request) {
   if (!title?.trim()) {
     return NextResponse.json({ error: "Title is required." }, { status: 400 });
   }
-  if (!movement || !(await getMovement(movement))) {
+  const movementRow = movement ? await getMovement(movement) : undefined;
+  if (!movementRow) {
     return NextResponse.json({ error: "Unknown movement." }, { status: 400 });
   }
-  if (!medium || !(await getMedium(medium))) {
+  const mediumRow = medium ? await getMedium(medium) : undefined;
+  if (!mediumRow) {
     return NextResponse.json({ error: "Unknown medium." }, { status: 400 });
   }
   if (!dimensions?.trim()) {
     return NextResponse.json({ error: "Dimensions are required." }, { status: 400 });
   }
 
-  // TODO(build order step 2/7): upload images to Supabase Storage, insert
-  // into `sell_submissions` as status=pending, and email the admin via
-  // Resend once those are connected. For now this just validates and logs.
-  console.info("[sell-submit]", { artistName, artistEmail, title, movement, medium, dimensions, askingPrice, message });
+  // TODO(build order step 7): image upload from this form + email the admin
+  // via Resend once connected. Images can be added later from /admin.
+  await createSellSubmission({
+    artistName,
+    artistEmail,
+    title,
+    movementId: movementRow.id,
+    mediumId: mediumRow.id,
+    dimensions,
+    askingPrice: askingPrice?.trim() ? parseToMinorUnits(askingPrice, "NGN") : undefined,
+    message,
+  });
 
   return NextResponse.json({ ok: true });
 }

@@ -39,6 +39,13 @@ export async function getMovement(slug: string): Promise<Movement | undefined> {
   return data ? toMovement(data) : undefined;
 }
 
+export async function getMovementById(id: string): Promise<Movement | undefined> {
+  const supabase = createClient();
+  const { data, error } = await supabase.from("movements").select("*").eq("id", id).maybeSingle();
+  if (error) throw error;
+  return data ? toMovement(data) : undefined;
+}
+
 export type MovementWithCount = Movement & { artworkCount: number };
 
 export async function listMovementsWithCounts(): Promise<MovementWithCount[]> {
@@ -86,6 +93,13 @@ export async function getArtist(slug: string): Promise<Artist | undefined> {
   return data ? toArtist(data) : undefined;
 }
 
+export async function getArtistById(id: string): Promise<Artist | undefined> {
+  const supabase = createClient();
+  const { data, error } = await supabase.from("artists").select("*").eq("id", id).maybeSingle();
+  if (error) throw error;
+  return data ? toArtist(data) : undefined;
+}
+
 export type ArtistWithCount = Artist & { artworkCount: number };
 
 export async function listArtistsWithCounts(): Promise<ArtistWithCount[]> {
@@ -124,6 +138,13 @@ export async function listMediums(): Promise<Medium[]> {
 export async function getMedium(slug: string): Promise<Medium | undefined> {
   const supabase = createClient();
   const { data, error } = await supabase.from("mediums").select("*").eq("slug", slug).maybeSingle();
+  if (error) throw error;
+  return data ? toMedium(data) : undefined;
+}
+
+export async function getMediumById(id: string): Promise<Medium | undefined> {
+  const supabase = createClient();
+  const { data, error } = await supabase.from("mediums").select("*").eq("id", id).maybeSingle();
   if (error) throw error;
   return data ? toMedium(data) : undefined;
 }
@@ -198,4 +219,112 @@ export async function getArtwork(slug: string): Promise<Artwork | undefined> {
     .returns<ArtworkJoinRow>();
   if (error) throw error;
   return data ? toArtwork(data) : undefined;
+}
+
+export async function getArtworkById(id: string): Promise<Artwork | undefined> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("artworks")
+    .select(ARTWORK_JOIN_SELECT)
+    .eq("id", id)
+    .maybeSingle()
+    .returns<ArtworkJoinRow>();
+  if (error) throw error;
+  return data ? toArtwork(data) : undefined;
+}
+
+// Enquiries ---------------------------------------------------------------
+
+type EnquiryRow = Database["public"]["Tables"]["enquiries"]["Row"];
+export type EnquiryWithArtwork = EnquiryRow & { artwork: { slug: string; title: string } | null };
+
+export async function createEnquiry(input: {
+  type: "purchase" | "enquiry";
+  artworkId: string;
+  name: string;
+  email: string;
+  message?: string;
+  offer?: number;
+}): Promise<void> {
+  const supabase = createClient();
+  const { error } = await supabase.from("enquiries").insert({
+    type: input.type,
+    artwork_id: input.artworkId,
+    name: input.name,
+    email: input.email,
+    message: input.message || null,
+    offer: input.offer ?? null,
+  });
+  if (error) throw error;
+}
+
+export async function listEnquiries(): Promise<EnquiryWithArtwork[]> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("enquiries")
+    .select("*, artwork:artworks(slug, title)")
+    .order("created_at", { ascending: false })
+    .returns<EnquiryWithArtwork[]>();
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function updateEnquiryStatus(id: string, status: Database["public"]["Enums"]["enquiry_status"]) {
+  const supabase = createClient();
+  const { error } = await supabase.from("enquiries").update({ status }).eq("id", id);
+  if (error) throw error;
+}
+
+// Sell submissions ---------------------------------------------------------------
+
+type SellSubmissionRow = Database["public"]["Tables"]["sell_submissions"]["Row"];
+export type SellSubmissionWithTaxonomy = SellSubmissionRow & {
+  movement: { name: string } | null;
+  medium: { name: string } | null;
+};
+
+export async function createSellSubmission(input: {
+  artistName: string;
+  artistEmail: string;
+  title: string;
+  movementId: string;
+  mediumId: string;
+  dimensions: string;
+  askingPrice?: number;
+  currency?: string;
+  message?: string;
+}): Promise<void> {
+  const supabase = createClient();
+  const { error } = await supabase.from("sell_submissions").insert({
+    artist_name: input.artistName,
+    artist_email: input.artistEmail,
+    title: input.title,
+    movement_id: input.movementId,
+    medium_id: input.mediumId,
+    dimensions: input.dimensions,
+    asking_price: input.askingPrice ?? null,
+    currency: input.currency ?? "NGN",
+    message: input.message || null,
+  });
+  if (error) throw error;
+}
+
+export async function listSellSubmissions(): Promise<SellSubmissionWithTaxonomy[]> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("sell_submissions")
+    .select("*, movement:movements(name), medium:mediums(name)")
+    .order("created_at", { ascending: false })
+    .returns<SellSubmissionWithTaxonomy[]>();
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function updateSellSubmissionStatus(
+  id: string,
+  status: Database["public"]["Enums"]["sell_submission_status"]
+) {
+  const supabase = createClient();
+  const { error } = await supabase.from("sell_submissions").update({ status }).eq("id", id);
+  if (error) throw error;
 }

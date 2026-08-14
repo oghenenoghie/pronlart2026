@@ -21,7 +21,7 @@ export default async function ArtworkDetailPage({ params }: { params: { slug: st
 
   return (
     <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-6 py-16 md:grid-cols-2">
-      <ArtworkImage artwork={artwork} className="border border-line" />
+      <ArtworkImage artwork={artwork} className="border border-line" priority />
 
       <div>
         <Link
