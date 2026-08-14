@@ -4,6 +4,11 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
+  // Required by @supabase/postgrest-js's generic inference (matches the CLI
+  // codegen output) — without this, Insert/Update resolve to `never`.
+  __InternalSupabase: {
+    PostgrestVersion: "12";
+  };
   public: {
     Tables: {
       profiles: {
