@@ -320,6 +320,18 @@ export async function listSellSubmissions(): Promise<SellSubmissionWithTaxonomy[
   return data ?? [];
 }
 
+export async function getSellSubmissionById(id: string): Promise<SellSubmissionWithTaxonomy | undefined> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("sell_submissions")
+    .select("*, movement:movements(name), medium:mediums(name)")
+    .eq("id", id)
+    .maybeSingle()
+    .returns<SellSubmissionWithTaxonomy>();
+  if (error) throw error;
+  return data ?? undefined;
+}
+
 export async function updateSellSubmissionStatus(
   id: string,
   status: Database["public"]["Enums"]["sell_submission_status"]
