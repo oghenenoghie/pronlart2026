@@ -1,7 +1,7 @@
 import { listSellSubmissions } from "@/lib/data";
 import { formatPrice } from "@/lib/money";
 import { StatusSelect } from "@/components/admin/StatusSelect";
-import { setSellSubmissionStatus } from "./actions";
+import { convertSubmissionToArtwork, setSellSubmissionStatus } from "./actions";
 
 const STATUSES = ["pending", "accepted", "declined"] as const;
 
@@ -24,7 +24,8 @@ export default async function AdminSubmissionsPage() {
               <th className="pb-3 pr-4">Medium</th>
               <th className="pb-3 pr-4">Asking</th>
               <th className="pb-3 pr-4">Received</th>
-              <th className="pb-3">Status</th>
+              <th className="pb-3 pr-4">Status</th>
+              <th className="pb-3" />
             </tr>
           </thead>
           <tbody>
@@ -43,12 +44,19 @@ export default async function AdminSubmissionsPage() {
                 <td className="py-3 pr-4 tabular-nums text-ash">
                   {new Date(submission.created_at).toLocaleDateString()}
                 </td>
-                <td className="py-3">
+                <td className="py-3 pr-4">
                   <StatusSelect
                     action={setSellSubmissionStatus.bind(null, submission.id)}
                     current={submission.status}
                     options={STATUSES}
                   />
+                </td>
+                <td className="py-3">
+                  <form action={convertSubmissionToArtwork.bind(null, submission.id)}>
+                    <button type="submit" className="font-body text-sm text-ash transition-colors hover:text-gesso">
+                      Convert to artwork
+                    </button>
+                  </form>
                 </td>
               </tr>
             ))}

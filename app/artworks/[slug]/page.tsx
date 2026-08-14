@@ -5,13 +5,28 @@ import { ArtworkImage } from "@/components/art/ArtworkImage";
 import { StatusChip } from "@/components/art/StatusChip";
 import { EnquireSection } from "@/components/art/EnquireSection";
 import { getArtwork } from "@/lib/data";
+import { supabaseImageUrl } from "@/lib/og-image";
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const artwork = await getArtwork(params.slug);
   if (!artwork) return {};
+
+  const primary = artwork.images.find((img) => img.isPrimary) ?? artwork.images[0];
+  const title = `${artwork.title} — ${artwork.artist.name}`;
+
   return {
-    title: `${artwork.title} — ${artwork.artist.name}`,
+    title,
     description: artwork.description,
+    openGraph: primary
+      ? {
+          title,
+          description: artwork.description,
+          images: [{ url: supabaseImageUrl(primary.path), width: primary.width, height: primary.height, alt: primary.alt }],
+        }
+      : undefined,
+    twitter: primary
+      ? { card: "summary_large_image", title, description: artwork.description, images: [supabaseImageUrl(primary.path)] }
+      : undefined,
   };
 }
 
