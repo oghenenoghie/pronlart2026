@@ -1,10 +1,14 @@
 import Link from "next/link";
 import { Reveal } from "@/components/motion/Reveal";
 import { ExhibitionScroll } from "@/components/exhibition/ExhibitionScroll";
-import { getFeaturedArtworks } from "@/lib/mock-data";
+import { ExhibitionSpotlight } from "@/components/home/ExhibitionSpotlight";
+import { SellCallout } from "@/components/home/SellCallout";
+import { getFeaturedArtworks, MOCK_ARTWORKS, MOVEMENTS_WITH_COUNTS } from "@/lib/mock-data";
 
 export default function Home() {
   const featured = getFeaturedArtworks();
+  const movements = [...MOVEMENTS_WITH_COUNTS].sort((a, b) => a.sort - b.sort).slice(0, 7);
+  const sellArtwork = MOCK_ARTWORKS.find((a) => !a.featured) ?? MOCK_ARTWORKS[MOCK_ARTWORKS.length - 1];
 
   return (
     <main>
@@ -37,6 +41,10 @@ export default function Home() {
       </section>
 
       <ExhibitionScroll works={featured} />
+
+      <ExhibitionSpotlight featured={featured} movements={movements} />
+
+      <SellCallout artwork={sellArtwork} />
 
       <section className="mx-auto max-w-6xl border-t border-line px-6 py-16 text-center">
         <Link
