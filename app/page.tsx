@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Reveal } from "@/components/motion/Reveal";
 import { ExhibitionScroll } from "@/components/exhibition/ExhibitionScroll";
+import { ExhibitionSpotlight } from "@/components/home/ExhibitionSpotlight";
+import { SellCallout } from "@/components/home/SellCallout";
 import { MovementsTeaser } from "@/components/common/MovementsTeaser";
 import { listArtworks, listMovementsWithCounts } from "@/lib/data";
 
@@ -51,7 +53,11 @@ export default async function Home() {
 
       {exhibitionWorks.length > 0 && <ExhibitionScroll works={exhibitionWorks} />}
 
+      <ExhibitionSpotlight works={exhibitionWorks} />
+
       <MovementsTeaser movements={movements} />
+
+      <SellCallout artwork={exhibitionWorks[EXHIBITION_SIZE - 1]} />
 
       <section className="mx-auto max-w-6xl border-t border-line px-6 py-16">
         <div className="grid grid-cols-1 gap-10 text-center sm:grid-cols-3 sm:text-left">
