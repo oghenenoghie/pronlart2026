@@ -1,30 +1,41 @@
+import Image from "next/image";
 import type { Artwork } from "@/types";
 
-/**
- * Placeholder canvas until the Supabase Storage media pipeline (build order
- * step 3) is wired up — a muted, deterministic wash standing in for the
- * artwork photograph, so layout and aspect ratio are correct from day one.
- */
-function hueFor(id: string): number {
-  let hash = 0;
-  for (const char of id) hash = (hash * 31 + char.charCodeAt(0)) % 360;
-  return hash;
-}
-
-export function ArtworkImage({ artwork, className }: { artwork: Artwork; className?: string }) {
+export function ArtworkImage({
+  artwork,
+  className,
+  priority,
+}: {
+  artwork: Artwork;
+  className?: string;
+  priority?: boolean;
+}) {
   const primary = artwork.images.find((img) => img.isPrimary) ?? artwork.images[0];
-  const hue = hueFor(artwork.id);
-  const ratio = primary ? `${primary.width} / ${primary.height}` : "4 / 5";
+
+  if (!primary) {
+    return (
+      <div
+        className={className}
+        style={{ aspectRatio: "4 / 5", background: "hsl(40 8% 10%)" }}
+        role="img"
+        aria-label={artwork.title}
+      />
+    );
+  }
 
   return (
     <div
       className={className}
-      style={{
-        aspectRatio: ratio,
-        background: `linear-gradient(155deg, hsl(${hue} 22% 14%), hsl(${hue} 14% 7%))`,
-      }}
-      role="img"
-      aria-label={primary?.alt ?? artwork.title}
-    />
+      style={{ position: "relative", overflow: "hidden", aspectRatio: `${primary.width} / ${primary.height}` }}
+    >
+      <Image
+        src={primary.path}
+        alt={primary.alt}
+        fill
+        sizes="(min-width: 1024px) 50vw, 100vw"
+        priority={priority}
+        className="object-cover"
+      />
+    </div>
   );
 }

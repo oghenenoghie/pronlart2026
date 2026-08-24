@@ -31,6 +31,12 @@ export function parseToMinorUnits(major: string, currency: string): number {
   return Math.round(parseFloat(major) * 10 ** exponent);
 }
 
+/** Inverse of parseToMinorUnits — for pre-filling an editable price input. */
+export function toMajorUnitsString(minorUnits: number, currency: string): string {
+  const exponent = exponentFor(currency);
+  return (minorUnits / 10 ** exponent).toFixed(exponent);
+}
+
 export function addMinorUnits(a: number, b: number): number {
   return a + b;
 }
