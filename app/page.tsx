@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Reveal } from "@/components/motion/Reveal";
-import { ExhibitionScroll } from "@/components/exhibition/ExhibitionScroll";
 import { ExhibitionSpotlight } from "@/components/home/ExhibitionSpotlight";
 import { SellCallout } from "@/components/home/SellCallout";
 import { MovementsTeaser } from "@/components/common/MovementsTeaser";
@@ -50,8 +49,6 @@ export default async function Home() {
           </div>
         </Reveal>
       </section>
-
-      {exhibitionWorks.length > 0 && <ExhibitionScroll works={exhibitionWorks} />}
 
       <ExhibitionSpotlight works={exhibitionWorks} />
 
