@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Reveal } from "@/components/motion/Reveal";
-import { ExhibitionScroll } from "@/components/exhibition/ExhibitionScroll";
 import { ExhibitionSpotlight } from "@/components/home/ExhibitionSpotlight";
 import { SellCallout } from "@/components/home/SellCallout";
 import { getFeaturedArtworks, MOCK_ARTWORKS, MOVEMENTS_WITH_COUNTS } from "@/lib/mock-data";
@@ -39,8 +38,6 @@ export default function Home() {
           </div>
         </Reveal>
       </section>
-
-      <ExhibitionScroll works={featured} />
 
       <ExhibitionSpotlight featured={featured} movements={movements} />
 
