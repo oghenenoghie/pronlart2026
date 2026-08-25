@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArtworkImage } from "@/components/art/ArtworkImage";
 import { StatusChip } from "@/components/art/StatusChip";
 import { EnquireSection } from "@/components/art/EnquireSection";
+import { Reveal } from "@/components/motion/Reveal";
 import { getArtwork } from "@/lib/data";
 import { supabaseImageUrl } from "@/lib/og-image";
 
@@ -36,9 +37,11 @@ export default async function ArtworkDetailPage({ params }: { params: { slug: st
 
   return (
     <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-6 py-16 md:grid-cols-2">
-      <ArtworkImage artwork={artwork} className="border border-line" priority />
+      <Reveal>
+        <ArtworkImage artwork={artwork} className="border border-line" priority />
+      </Reveal>
 
-      <div>
+      <Reveal>
         <Link
           href={`/movements/${artwork.movement.slug}`}
           className="font-body text-label uppercase tracking-[0.18em] text-ash hover:text-gesso"
@@ -89,7 +92,7 @@ export default async function ArtworkDetailPage({ params }: { params: { slug: st
           currency={artwork.currency}
           status={artwork.status}
         />
-      </div>
+      </Reveal>
     </div>
   );
 }

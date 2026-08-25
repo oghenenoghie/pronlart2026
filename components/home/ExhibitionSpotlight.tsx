@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Reveal } from "@/components/motion/Reveal";
 import { ArtworkImage } from "@/components/art/ArtworkImage";
+import { LinkButton } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Artwork } from "@/types";
 
@@ -45,12 +46,9 @@ export function ExhibitionSpotlight({ works }: { works: Artwork[] }) {
               <ArtworkImage artwork={right} className="h-full w-full" />
             </div>
 
-            <Link
-              href={`/artworks/${centre.slug}`}
-              className="absolute bottom-0 z-20 border border-gilt bg-ink px-8 py-3 font-body text-label uppercase tracking-[0.18em] text-gesso transition-colors hover:bg-gilt hover:text-ink"
-            >
+            <LinkButton href={`/artworks/${centre.slug}`} className="absolute bottom-0 z-20 bg-ink">
               More Info
-            </Link>
+            </LinkButton>
           </div>
         </Reveal>
 

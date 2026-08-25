@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { Button } from "@/components/ui/button";
+import { fieldClass, fieldLabelClass } from "@/lib/utils";
 import type { Medium, Movement } from "@/types";
 
 type Status = "idle" | "submitting" | "success" | "error";
@@ -54,56 +56,32 @@ export function SellForm({ movements, mediums }: { movements: Movement[]; medium
     <form onSubmit={handleSubmit} className="mt-12 grid max-w-xl gap-6 border-t border-line pt-8">
       <div className="grid gap-6 sm:grid-cols-2">
         <div>
-          <label htmlFor="artistName" className="font-body text-label uppercase tracking-[0.18em] text-ash">
+          <label htmlFor="artistName" className={fieldLabelClass}>
             Your name
           </label>
-          <input
-            id="artistName"
-            name="artistName"
-            type="text"
-            required
-            className="mt-2 w-full border border-line bg-ink px-3 py-2 font-body text-sm text-gesso focus:border-gilt focus:outline-none"
-          />
+          <input id="artistName" name="artistName" type="text" required className={fieldClass} />
         </div>
         <div>
-          <label htmlFor="artistEmail" className="font-body text-label uppercase tracking-[0.18em] text-ash">
+          <label htmlFor="artistEmail" className={fieldLabelClass}>
             Email
           </label>
-          <input
-            id="artistEmail"
-            name="artistEmail"
-            type="email"
-            required
-            className="mt-2 w-full border border-line bg-ink px-3 py-2 font-body text-sm text-gesso focus:border-gilt focus:outline-none"
-          />
+          <input id="artistEmail" name="artistEmail" type="email" required className={fieldClass} />
         </div>
       </div>
 
       <div>
-        <label htmlFor="title" className="font-body text-label uppercase tracking-[0.18em] text-ash">
+        <label htmlFor="title" className={fieldLabelClass}>
           Work title
         </label>
-        <input
-          id="title"
-          name="title"
-          type="text"
-          required
-          className="mt-2 w-full border border-line bg-ink px-3 py-2 font-body text-sm text-gesso focus:border-gilt focus:outline-none"
-        />
+        <input id="title" name="title" type="text" required className={fieldClass} />
       </div>
 
       <div className="grid gap-6 sm:grid-cols-2">
         <div>
-          <label htmlFor="movement" className="font-body text-label uppercase tracking-[0.18em] text-ash">
+          <label htmlFor="movement" className={fieldLabelClass}>
             Movement
           </label>
-          <select
-            id="movement"
-            name="movement"
-            required
-            defaultValue=""
-            className="mt-2 w-full border border-line bg-ink px-3 py-2 font-body text-sm text-gesso focus:border-gilt focus:outline-none"
-          >
+          <select id="movement" name="movement" required defaultValue="" className={fieldClass}>
             <option value="" disabled className="bg-ink text-ash">
               Select a movement
             </option>
@@ -115,16 +93,10 @@ export function SellForm({ movements, mediums }: { movements: Movement[]; medium
           </select>
         </div>
         <div>
-          <label htmlFor="medium" className="font-body text-label uppercase tracking-[0.18em] text-ash">
+          <label htmlFor="medium" className={fieldLabelClass}>
             Medium
           </label>
-          <select
-            id="medium"
-            name="medium"
-            required
-            defaultValue=""
-            className="mt-2 w-full border border-line bg-ink px-3 py-2 font-body text-sm text-gesso focus:border-gilt focus:outline-none"
-          >
+          <select id="medium" name="medium" required defaultValue="" className={fieldClass}>
             <option value="" disabled className="bg-ink text-ash">
               Select a medium
             </option>
@@ -139,7 +111,7 @@ export function SellForm({ movements, mediums }: { movements: Movement[]; medium
 
       <div className="grid gap-6 sm:grid-cols-2">
         <div>
-          <label htmlFor="dimensions" className="font-body text-label uppercase tracking-[0.18em] text-ash">
+          <label htmlFor="dimensions" className={fieldLabelClass}>
             Dimensions
           </label>
           <input
@@ -148,11 +120,11 @@ export function SellForm({ movements, mediums }: { movements: Movement[]; medium
             type="text"
             required
             placeholder="e.g. 120 × 90 cm"
-            className="mt-2 w-full border border-line bg-ink px-3 py-2 font-body text-sm text-gesso placeholder:text-ash/60 focus:border-gilt focus:outline-none"
+            className={fieldClass}
           />
         </div>
         <div>
-          <label htmlFor="askingPrice" className="font-body text-label uppercase tracking-[0.18em] text-ash">
+          <label htmlFor="askingPrice" className={fieldLabelClass}>
             Asking price (optional)
           </label>
           <input
@@ -160,21 +132,16 @@ export function SellForm({ movements, mediums }: { movements: Movement[]; medium
             name="askingPrice"
             type="text"
             placeholder="Leave blank for price on request"
-            className="mt-2 w-full border border-line bg-ink px-3 py-2 font-body text-sm text-gesso placeholder:text-ash/60 focus:border-gilt focus:outline-none"
+            className={fieldClass}
           />
         </div>
       </div>
 
       <div>
-        <label htmlFor="message" className="font-body text-label uppercase tracking-[0.18em] text-ash">
+        <label htmlFor="message" className={fieldLabelClass}>
           Anything else
         </label>
-        <textarea
-          id="message"
-          name="message"
-          rows={4}
-          className="mt-2 w-full border border-line bg-ink px-3 py-2 font-body text-sm text-gesso focus:border-gilt focus:outline-none"
-        />
+        <textarea id="message" name="message" rows={4} className={fieldClass} />
       </div>
 
       <p className="font-body text-sm text-ash">
@@ -183,13 +150,9 @@ export function SellForm({ movements, mediums }: { movements: Movement[]; medium
 
       {status === "error" && <p className="font-body text-sm text-red-400">{errorMessage}</p>}
 
-      <button
-        type="submit"
-        disabled={status === "submitting"}
-        className="w-fit border border-gilt px-6 py-2.5 font-body text-label uppercase tracking-[0.18em] text-gesso transition-colors hover:bg-gilt hover:text-ink disabled:cursor-not-allowed disabled:opacity-60"
-      >
+      <Button type="submit" disabled={status === "submitting"}>
         {status === "submitting" ? "Sending…" : "Submit"}
-      </button>
+      </Button>
     </form>
   );
 }
