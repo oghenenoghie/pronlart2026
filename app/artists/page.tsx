@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ARTISTS_WITH_COUNTS } from "@/lib/mock-data";
+import { getArtistsWithCounts } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Artists",
   description: "The artists showing at Pronlart.",
 };
 
-export default function ArtistsPage() {
+export default async function ArtistsPage() {
+  const artists = await getArtistsWithCounts();
+
   return (
     <div className="mx-auto max-w-6xl px-6 py-16">
       <h1 className="font-display text-display-lg italic text-gesso">Artists</h1>
@@ -16,7 +18,7 @@ export default function ArtistsPage() {
       </p>
 
       <ul className="mt-12 grid grid-cols-1 gap-x-8 gap-y-10 border-t border-line pt-12 sm:grid-cols-2">
-        {ARTISTS_WITH_COUNTS.map((artist) => (
+        {artists.map((artist) => (
           <li key={artist.slug} className="border-b border-line pb-10">
             <Link href={`/artists/${artist.slug}`} className="group block">
               <h2 className="font-display text-h2 italic text-gesso transition-colors group-hover:text-gilt">

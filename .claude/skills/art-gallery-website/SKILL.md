@@ -4,11 +4,11 @@ description: >
   Full project context for a cinematic art & painting gallery website — a curated
   marketplace where collectors browse and buy original artworks, artists upload and
   sell work, and visitors explore art through movements (Renaissance → Bronze).
-  Built on Next.js App Router + TypeScript + Tailwind + shadcn/ui + Supabase, with a
+  Built on Next.js App Router + TypeScript + Tailwind + shadcn/ui + Neon Postgres, with a
   layered motion system (CSS → Motion → GSAP → optional Three.js/WebGL). Use this skill
   whenever working on the gallery in any way: building or styling pages and components,
   the cinematic scroll-driven exhibition, the artwork viewer / museum-label pattern,
-  movement ("art classes") pages, artist profiles, the shop/enquire/sell flows, Supabase
+  movement ("art classes") pages, artist profiles, the shop/enquire/sell flows, Neon
   schema/queries/RLS, the media pipeline, or deployment. Trigger even without a project
   name — any mention of the painting gallery, art marketplace, movement/class pages,
   the cinematic exhibition, museum-label metadata, or Artwork/Artist/Movement entities
@@ -48,8 +48,9 @@ Keep three principles in view on every screen:
 | Motion (primary) | **Motion / Framer Motion** | Page + section reveals, text, modals, gallery hover |
 | Motion (choreography) | **GSAP + ScrollTrigger** | Pinned sections, horizontal exhibition, scroll-driven camera. **Signature moments only.** |
 | Motion (3D) | **Three.js + React Three Fiber + Drei** | **Optional, lazy-loaded.** Framed-painting scene, one hero moment. Never the whole site. |
-| Data + Auth | **Supabase (Postgres)** | System of record, Auth, Row-Level Security, Storage |
-| Media | **Supabase Storage** (launch) → Cloudinary/imgproxy (scale) | Hi-res artwork; `next/image` with a custom loader |
+| Data | **Neon (serverless Postgres)** | System of record — catalogue, enquiries, sell submissions. `@neondatabase/serverless` HTTP driver via `lib/db.ts` |
+| Auth | TBD (Supabase Auth or Neon Auth) | Needed for `/admin/*` CRUD — not yet wired |
+| Media | Supabase Storage (launch) → Cloudinary/imgproxy (scale) | Hi-res artwork; `next/image` with a custom loader |
 | Payments | Stripe (intl) + Paystack/Flutterwave (NG) + Tap/MyFatoorah (GCC) | Behind a single `PaymentProvider` seam |
 | Email | Resend | Enquiry, purchase, sell-submission notifications |
 | Search | Postgres FTS + `pg_trgm` (launch) → Meilisearch/Typesense (scale) | Title, artist, movement, medium |
@@ -324,15 +325,15 @@ components/
 ├── art/               ArtworkCard, Placard, Gallery, Zoom, FacetRail, StatusChip
 ├── exhibition/        FeaturedCanvas, PaintingScene, ExhibitionScroll
 └── motion/            Reveal, TextReveal, LenisProvider
-lib/                   supabase.ts, image-loader.ts, fonts.ts, money.ts, search.ts, payments.ts, utils.ts (cn)
-types/                 index.ts (Artwork, Artist, Movement, Exhibition, Enquiry…) + supabase-generated types
+lib/                   db.ts, data.ts, image-loader.ts, fonts.ts, money.ts, search.ts, payments.ts, utils.ts (cn)
+types/                 index.ts (Artwork, Artist, Movement, Exhibition, Enquiry…)
 ```
 
 ---
 
 ## Key flows
 
-- **Buy / enquire:** priced works → checkout via `PaymentProvider` (Stripe/Paystack/Tap by region). POA works → enquiry form (Supabase insert + Resend). Prefill artwork ref; on sale, flip status → `reserved`/`sold`.
+- **Buy / enquire:** priced works → checkout via `PaymentProvider` (Stripe/Paystack/Tap by region). POA works → enquiry form (Neon insert + Resend). Prefill artwork ref; on sale, flip status → `reserved`/`sold`.
 - **Sell artwork:** public `SellSubmission` form (title, movement, medium, dimensions, asking price, images) → Storage upload + insert + Resend to admin. Admin accepts → becomes an Artwork.
 - **Archive:** sold works stay live, marked `sold`, and flow into `/archive` — provenance + a trust signal, never deleted (append-only spirit).
 - **Movement page:** essay (`lede` + body) + a curated, filterable grid of works in that movement — this is the "class."
@@ -354,7 +355,7 @@ types/                 index.ts (Artwork, Artist, Movement, Exhibition, Enquiry�
 ## Build order
 
 1. Repo + Next.js + Tailwind + fonts + tokens + Lenis provider + Grain; GitHub Actions + Vercel from commit one.
-2. Supabase schema + movement seed (13) + generated types + RLS.
+2. Neon schema + movement seed (13) + typed data-access layer (`lib/data.ts`).
 3. Media pipeline (Storage + `next/image` loader) wired end-to-end before listing UI.
 4. `Placard` + `ArtworkCard` + gallery list/detail + facet search (Postgres FTS).
 5. Movement pages (essays + curated grids) — the "classes."

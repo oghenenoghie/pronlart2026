@@ -3,8 +3,7 @@ import type { Metadata } from "next";
 import { ArtworkCard } from "@/components/art/ArtworkCard";
 import { FacetRail } from "@/components/art/FacetRail";
 import { SortSelect } from "@/components/art/SortSelect";
-import { listArtworks, type ArtworkFilters } from "@/lib/data";
-import { MOVEMENTS_WITH_COUNTS } from "@/lib/mock-data";
+import { listArtworks, getMovementsWithCounts, type ArtworkFilters } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Gallery",
@@ -16,11 +15,14 @@ export default async function GalleryPage({
 }: {
   searchParams: { movement?: string; status?: ArtworkFilters["status"]; sort?: ArtworkFilters["sort"] };
 }) {
-  const artworks = await listArtworks({
-    movement: searchParams.movement,
-    status: searchParams.status,
-    sort: searchParams.sort,
-  });
+  const [artworks, movements] = await Promise.all([
+    listArtworks({
+      movement: searchParams.movement,
+      status: searchParams.status,
+      sort: searchParams.sort,
+    }),
+    getMovementsWithCounts(),
+  ]);
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-16">
@@ -32,7 +34,7 @@ export default async function GalleryPage({
       <div className="mt-12 grid grid-cols-1 gap-12 md:grid-cols-[220px_1fr]">
         <aside>
           <Suspense fallback={null}>
-            <FacetRail movements={MOVEMENTS_WITH_COUNTS} />
+            <FacetRail movements={movements} />
           </Suspense>
         </aside>
 

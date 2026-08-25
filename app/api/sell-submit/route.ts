@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getMovementBySlug } from "@/lib/movements";
+import { createSellSubmission } from "@/lib/data";
 import type { SellSubmissionInput } from "@/types";
 
 export async function POST(request: Request) {
@@ -18,17 +19,24 @@ export async function POST(request: Request) {
   if (!title?.trim()) {
     return NextResponse.json({ error: "Title is required." }, { status: 400 });
   }
-  if (!movement || !getMovementBySlug(movement)) {
+  const movementRecord = movement ? getMovementBySlug(movement) : undefined;
+  if (!movementRecord) {
     return NextResponse.json({ error: "Unknown movement." }, { status: 400 });
   }
   if (!medium?.trim() || !dimensions?.trim()) {
     return NextResponse.json({ error: "Medium and dimensions are required." }, { status: 400 });
   }
 
-  // TODO(build order step 2/7): upload images to Supabase Storage, insert
-  // into `sell_submissions` as status=pending, and email the admin via
-  // Resend once those are connected. For now this just validates and logs.
-  console.info("[sell-submit]", { artistName, artistEmail, title, movement, medium, dimensions, askingPrice, message });
+  await createSellSubmission({
+    artistName,
+    artistEmail,
+    title,
+    movementId: movementRecord.id,
+    medium,
+    dimensions,
+    askingPrice,
+    message,
+  });
 
   return NextResponse.json({ ok: true });
 }
