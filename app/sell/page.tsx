@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
 import { SellForm } from "@/components/forms/SellForm";
 import { Reveal } from "@/components/motion/Reveal";
+import { listMediums, listMovements } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Sell",
   description: "Submit a work to be considered for the gallery.",
 };
 
-export default function SellPage() {
+export default async function SellPage() {
+  const [movements, mediums] = await Promise.all([listMovements(), listMediums()]);
+
   return (
     <div className="mx-auto max-w-6xl px-6 py-16">
       <Reveal>
@@ -18,7 +21,7 @@ export default function SellPage() {
       </Reveal>
 
       <Reveal>
-        <SellForm />
+        <SellForm movements={movements} mediums={mediums} />
       </Reveal>
     </div>
   );

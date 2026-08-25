@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getMovementBySlug } from "@/lib/movements";
-import { createSellSubmission } from "@/lib/data";
+import { createSellSubmission, getMedium, getMovement } from "@/lib/data";
+import { parseToMinorUnits } from "@/lib/money";
 import type { SellSubmissionInput } from "@/types";
 
 export async function POST(request: Request) {
@@ -19,22 +19,28 @@ export async function POST(request: Request) {
   if (!title?.trim()) {
     return NextResponse.json({ error: "Title is required." }, { status: 400 });
   }
-  const movementRecord = movement ? getMovementBySlug(movement) : undefined;
-  if (!movementRecord) {
+  const movementRow = movement ? await getMovement(movement) : undefined;
+  if (!movementRow) {
     return NextResponse.json({ error: "Unknown movement." }, { status: 400 });
   }
-  if (!medium?.trim() || !dimensions?.trim()) {
-    return NextResponse.json({ error: "Medium and dimensions are required." }, { status: 400 });
+  const mediumRow = medium ? await getMedium(medium) : undefined;
+  if (!mediumRow) {
+    return NextResponse.json({ error: "Unknown medium." }, { status: 400 });
+  }
+  if (!dimensions?.trim()) {
+    return NextResponse.json({ error: "Dimensions are required." }, { status: 400 });
   }
 
+  // TODO(build order step 7): image upload from this form + email the admin
+  // via Resend once connected. Images can be added later from /admin.
   await createSellSubmission({
     artistName,
     artistEmail,
     title,
-    movementId: movementRecord.id,
-    medium,
+    movementId: movementRow.id,
+    mediumId: mediumRow.id,
     dimensions,
-    askingPrice,
+    askingPrice: askingPrice?.trim() ? parseToMinorUnits(askingPrice, "NGN") : undefined,
     message,
   });
 

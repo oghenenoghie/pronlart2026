@@ -11,3 +11,13 @@ export const fieldClass =
 
 /** Shared style for a field's label. */
 export const fieldLabelClass = "font-body text-label uppercase tracking-[0.18em] text-ash";
+
+export function slugify(text: string): string {
+  return text
+    .normalize("NFKD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+}

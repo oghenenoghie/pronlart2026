@@ -4,10 +4,10 @@ import { ArtworkCard } from "@/components/art/ArtworkCard";
 import { EmptyState } from "@/components/common/EmptyState";
 import { Reveal } from "@/components/motion/Reveal";
 import { StaggerGroup, StaggerItem } from "@/components/motion/Stagger";
-import { getArtistBySlug, listArtworks } from "@/lib/data";
+import { getArtist, listArtworks } from "@/lib/data";
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const artist = await getArtistBySlug(params.slug);
+  const artist = await getArtist(params.slug);
   if (!artist) return {};
   return {
     title: artist.name,
@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 export default async function ArtistPage({ params }: { params: { slug: string } }) {
-  const artist = await getArtistBySlug(params.slug);
+  const artist = await getArtist(params.slug);
   if (!artist) notFound();
 
   const artworks = await listArtworks({ artist: artist.slug });

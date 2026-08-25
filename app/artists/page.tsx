@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/motion/Reveal";
 import { StaggerGroup, StaggerItem } from "@/components/motion/Stagger";
-import { getArtistsWithCounts } from "@/lib/data";
+import { listArtistsWithCounts } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Artists",
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ArtistsPage() {
-  const artists = await getArtistsWithCounts();
+  const artists = await listArtistsWithCounts();
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-16">

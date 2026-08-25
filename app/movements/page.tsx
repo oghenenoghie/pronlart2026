@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/motion/Reveal";
 import { StaggerGroup, StaggerItem } from "@/components/motion/Stagger";
-import { getMovementsWithCounts } from "@/lib/data";
+import { listMovementsWithCounts } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Movements",
@@ -10,8 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default async function MovementsPage() {
-  const movementsWithCounts = await getMovementsWithCounts();
-  const movements = [...movementsWithCounts].sort((a, b) => a.sort - b.sort);
+  const movements = (await listMovementsWithCounts()).sort((a, b) => a.sort - b.sort);
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-16">

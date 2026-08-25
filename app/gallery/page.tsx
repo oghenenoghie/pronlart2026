@@ -7,7 +7,7 @@ import { EmptyState } from "@/components/common/EmptyState";
 import { Reveal } from "@/components/motion/Reveal";
 import { StaggerGroup, StaggerItem } from "@/components/motion/Stagger";
 import { LinkButton } from "@/components/ui/button";
-import { listArtworks, getMovementsWithCounts, type ArtworkFilters } from "@/lib/data";
+import { listArtworks, listMovementsWithCounts, type ArtworkFilters } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Gallery",
@@ -25,7 +25,7 @@ export default async function GalleryPage({
       status: searchParams.status,
       sort: searchParams.sort,
     }),
-    getMovementsWithCounts(),
+    listMovementsWithCounts(),
   ]);
 
   return (

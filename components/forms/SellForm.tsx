@@ -2,12 +2,12 @@
 
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
-import { MOVEMENTS } from "@/lib/movements";
 import { fieldClass, fieldLabelClass } from "@/lib/utils";
+import type { Medium, Movement } from "@/types";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
-export function SellForm() {
+export function SellForm({ movements, mediums }: { movements: Movement[]; mediums: Medium[] }) {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -85,7 +85,7 @@ export function SellForm() {
             <option value="" disabled className="bg-ink text-ash">
               Select a movement
             </option>
-            {MOVEMENTS.map((movement) => (
+            {movements.map((movement) => (
               <option key={movement.slug} value={movement.slug} className="bg-ink text-gesso">
                 {movement.name}
               </option>
@@ -96,14 +96,16 @@ export function SellForm() {
           <label htmlFor="medium" className={fieldLabelClass}>
             Medium
           </label>
-          <input
-            id="medium"
-            name="medium"
-            type="text"
-            required
-            placeholder="e.g. Oil on canvas"
-            className={fieldClass}
-          />
+          <select id="medium" name="medium" required defaultValue="" className={fieldClass}>
+            <option value="" disabled className="bg-ink text-ash">
+              Select a medium
+            </option>
+            {mediums.map((medium) => (
+              <option key={medium.slug} value={medium.slug} className="bg-ink text-gesso">
+                {medium.name}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 

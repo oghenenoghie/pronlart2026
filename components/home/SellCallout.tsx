@@ -12,13 +12,21 @@ const TRUST_MARKS = [
   "Buyer Protection",
 ];
 
-/** Dark band pitching the sell flow, handing off to a white-cube trust strip. */
-export function SellCallout({ artwork }: { artwork: Artwork }) {
+/**
+ * Dark band pitching the sell flow, handing off to a white-cube trust
+ * strip. The image is optional — a work in the current exhibition if one's
+ * available — so this section never depends on inventory existing.
+ */
+export function SellCallout({ artwork }: { artwork?: Artwork }) {
   return (
     <section className="border-t border-line bg-ink">
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 sm:py-28 md:grid-cols-2 md:gap-20">
         <Reveal>
-          <ArtworkImage artwork={artwork} className="w-full border border-line" />
+          {artwork ? (
+            <ArtworkImage artwork={artwork} className="w-full border border-line" />
+          ) : (
+            <div className="aspect-[4/5] w-full border border-line" style={{ background: "hsl(40 8% 10%)" }} />
+          )}
         </Reveal>
 
         <Reveal>

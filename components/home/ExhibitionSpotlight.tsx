@@ -3,31 +3,20 @@ import { Reveal } from "@/components/motion/Reveal";
 import { ArtworkImage } from "@/components/art/ArtworkImage";
 import { LinkButton } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { Artwork, Movement } from "@/types";
-
-function movementHue(id: string): number {
-  let hash = 0;
-  for (const char of id) hash = (hash * 31 + char.charCodeAt(0)) % 360;
-  return hash;
-}
+import type { Artwork } from "@/types";
 
 /**
- * The current exhibition, framed by two out-of-focus works either side —
- * a static echo of the ExhibitionScroll pin/crossfade, with a strip of
- * movements underneath standing in for "what else is showing."
+ * A static echo of the ExhibitionScroll pin/crossfade above it: the lead
+ * work of the current exhibition framed by two out-of-focus neighbours,
+ * with the rest of the exhibition as a thumbnail strip underneath.
  */
-export function ExhibitionSpotlight({
-  featured,
-  movements,
-}: {
-  featured: Artwork[];
-  movements: Movement[];
-}) {
-  const centre = featured[0];
-  const left = featured[1] ?? centre;
-  const right = featured[2] ?? centre;
-
+export function ExhibitionSpotlight({ works }: { works: Artwork[] }) {
+  const centre = works[0];
   if (!centre) return null;
+
+  const left = works[1] ?? centre;
+  const right = works[2] ?? centre;
+  const thumbnails = works.slice(0, 7);
 
   return (
     <section className="border-t border-line bg-ink px-6 py-20 sm:py-28">
@@ -47,7 +36,7 @@ export function ExhibitionSpotlight({
             </div>
 
             <div className="relative z-10 w-full max-w-2xl border border-line bg-ink">
-              <ArtworkImage artwork={centre} className="w-full" />
+              <ArtworkImage artwork={centre} className="w-full" priority />
             </div>
 
             <div
@@ -63,38 +52,24 @@ export function ExhibitionSpotlight({
           </div>
         </Reveal>
 
-        <Reveal>
-          <div className="mt-16 grid grid-cols-2 gap-px border border-line bg-line sm:grid-cols-4 md:grid-cols-7">
-            {movements.map((movement, i) => (
-              <Link
-                key={movement.slug}
-                href={`/movements/${movement.slug}`}
-                className={cn(
-                  "group relative flex aspect-[4/3] flex-col justify-end overflow-hidden",
-                  i === 0 ? "bg-gesso" : "bg-ink",
-                )}
-              >
-                {i !== 0 && (
-                  <div
-                    aria-hidden
-                    className="absolute inset-0 opacity-70 transition-opacity group-hover:opacity-100"
-                    style={{
-                      background: `linear-gradient(155deg, hsl(${movementHue(movement.id)} 22% 14%), hsl(${movementHue(movement.id)} 14% 7%))`,
-                    }}
-                  />
-                )}
-                <span
-                  className={cn(
-                    "relative p-3 text-left font-body text-[0.7rem] uppercase leading-tight tracking-[0.12em]",
-                    i === 0 ? "text-ink/70" : "text-gesso",
-                  )}
+        {thumbnails.length > 1 && (
+          <Reveal>
+            <div className="mt-16 grid grid-cols-2 gap-px border border-line bg-line sm:grid-cols-4 md:grid-cols-7">
+              {thumbnails.map((artwork, i) => (
+                <Link
+                  key={artwork.id}
+                  href={`/artworks/${artwork.slug}`}
+                  className={cn("group relative block aspect-[4/3] overflow-hidden", i === 0 && "ring-1 ring-inset ring-gilt")}
                 >
-                  {movement.name}
-                </span>
-              </Link>
-            ))}
-          </div>
-        </Reveal>
+                  <ArtworkImage artwork={artwork} className="h-full w-full" />
+                  <span className="absolute inset-x-0 bottom-0 truncate bg-ink/70 p-2 text-left font-body text-[0.7rem] uppercase tracking-[0.1em] text-gesso transition-colors group-hover:text-gilt">
+                    {artwork.artist.name}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </Reveal>
+        )}
       </div>
     </section>
   );
