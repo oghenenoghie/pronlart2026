@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { Reveal } from "@/components/motion/Reveal";
 import { ExhibitionScroll } from "@/components/exhibition/ExhibitionScroll";
 import { ExhibitionSpotlight } from "@/components/home/ExhibitionSpotlight";
 import { SellCallout } from "@/components/home/SellCallout";
+import { LinkButton } from "@/components/ui/button";
 import { getFeaturedArtworks, getMovementsWithCounts, getSellCalloutArtwork } from "@/lib/data";
 
 export default async function Home() {
@@ -27,18 +27,10 @@ export default async function Home() {
           </p>
           <div className="mx-auto mt-10 h-px w-24 bg-gilt/40" />
           <div className="mt-10 flex items-center justify-center gap-6">
-            <Link
-              href="/gallery"
-              className="border border-gilt px-6 py-2.5 font-body text-label uppercase tracking-[0.18em] text-gesso transition-colors hover:bg-gilt hover:text-ink"
-            >
-              Enter the gallery
-            </Link>
-            <Link
-              href="/movements"
-              className="font-body text-label uppercase tracking-[0.18em] text-ash transition-colors hover:text-gesso"
-            >
+            <LinkButton href="/gallery">Enter the gallery</LinkButton>
+            <LinkButton href="/movements" variant="ghost">
               Explore movements
-            </Link>
+            </LinkButton>
           </div>
         </Reveal>
       </section>
@@ -49,14 +41,13 @@ export default async function Home() {
 
       {sellArtwork && <SellCallout artwork={sellArtwork} />}
 
-      <section className="mx-auto max-w-6xl border-t border-line px-6 py-16 text-center">
-        <Link
-          href="/gallery"
-          className="font-body text-label uppercase tracking-[0.18em] text-ash transition-colors hover:text-gesso"
-        >
-          View the full gallery →
-        </Link>
-      </section>
+      <Reveal>
+        <section className="mx-auto max-w-6xl border-t border-line px-6 py-16 text-center">
+          <LinkButton href="/gallery" variant="ghost">
+            View the full gallery →
+          </LinkButton>
+        </section>
+      </Reveal>
     </main>
   );
 }

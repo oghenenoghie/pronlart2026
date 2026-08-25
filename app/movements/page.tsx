@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Reveal } from "@/components/motion/Reveal";
+import { StaggerGroup, StaggerItem } from "@/components/motion/Stagger";
 import { getMovementsWithCounts } from "@/lib/data";
 
 export const metadata: Metadata = {
@@ -13,14 +15,16 @@ export default async function MovementsPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-16">
-      <h1 className="font-display text-display-lg italic text-gesso">Movements</h1>
-      <p className="mt-3 max-w-xl font-body text-lede text-ash">
-        Thirteen ways of looking at art, from Renaissance to Bronze — each a curated class in its own right.
-      </p>
+      <Reveal>
+        <h1 className="font-display text-display-lg italic text-gesso">Movements</h1>
+        <p className="mt-3 max-w-xl font-body text-lede text-ash">
+          Thirteen ways of looking at art, from Renaissance to Bronze — each a curated class in its own right.
+        </p>
+      </Reveal>
 
-      <ul className="mt-12 divide-y divide-line border-t border-line">
+      <StaggerGroup as="ul" className="mt-12 divide-y divide-line border-t border-line">
         {movements.map((movement) => (
-          <li key={movement.slug}>
+          <StaggerItem as="li" key={movement.slug}>
             <Link
               href={`/movements/${movement.slug}`}
               className="group flex items-baseline justify-between gap-6 py-6"
@@ -38,9 +42,9 @@ export default async function MovementsPage() {
                 {movement.artworkCount} {movement.artworkCount === 1 ? "work" : "works"}
               </span>
             </Link>
-          </li>
+          </StaggerItem>
         ))}
-      </ul>
+      </StaggerGroup>
     </div>
   );
 }

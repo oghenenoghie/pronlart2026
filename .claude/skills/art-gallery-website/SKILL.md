@@ -320,12 +320,12 @@ app/
 ├── admin/             artworks, artists, movements, enquiries, submissions  (RLS-gated)
 └── api/               enquiry, sell-submit, checkout, revalidate
 components/
-├── ui/                shadcn primitives
-├── common/            Header, Footer, Search, CustomCursor, Grain
+├── ui/                shadcn primitives + Button/LinkButton (buttonClass) — the one CTA style, never inline the border-gilt classes again
+├── common/            Header (active link + mobile drawer), Footer, EmptyState, RouteError, Search, CustomCursor, Grain
 ├── art/               ArtworkCard, Placard, Gallery, Zoom, FacetRail, StatusChip
 ├── exhibition/        FeaturedCanvas, PaintingScene, ExhibitionScroll
-└── motion/            Reveal, TextReveal, LenisProvider
-lib/                   db.ts, data.ts, image-loader.ts, fonts.ts, money.ts, search.ts, payments.ts, utils.ts (cn)
+└── motion/            Reveal, TextReveal, LenisProvider, Stagger (StaggerGroup/StaggerItem — grid/list reveal)
+lib/                   db.ts, data.ts, image-loader.ts, fonts.ts, money.ts, search.ts, payments.ts, utils.ts (cn, fieldClass, fieldLabelClass)
 types/                 index.ts (Artwork, Artist, Movement, Exhibition, Enquiry…)
 ```
 
@@ -345,7 +345,10 @@ types/                 index.ts (Artwork, Artist, Movement, Exhibition, Enquiry�
 - Server Components by default; `"use client"` only for state/effects/handlers/Motion/GSAP/R3F, pushed as low as possible.
 - `cn()` (clsx + tailwind-merge) for all className merges; no inline styles except Motion `style`.
 - Money through `lib/money.ts` (parse, add, format by currency exponent) — never raw arithmetic on prices in components.
-- Every data route gets `loading.tsx`; every route group gets `error.tsx`.
+- Every data route gets `loading.tsx`; every route group gets `error.tsx` (rendering shared `components/common/RouteError.tsx` with a route-specific message — never re-inline the markup).
+- Every CTA is `Button`/`LinkButton` from `components/ui/button.tsx` (or `buttonClass()` for a non-`<button>`/`<Link>` element like a `mailto:` anchor) — never inline the border-gilt hover classes again. Every form field uses `lib/utils.ts`'s `fieldClass`/`fieldLabelClass`.
+- Every page header (h1 + lede) wraps in `<Reveal>`; every card grid or list wraps in `<StaggerGroup>`/`<StaggerItem>` (`components/motion/Stagger.tsx`) so results reveal in a gentle stagger, not a hard pop-in.
+- Every "no results" case renders `components/common/EmptyState.tsx` (heading + explanation + optional action) — never a bare line of text.
 - `generateMetadata()` on every public page; per-artwork OG images + sitemap for SEO. Art is shared on social — OG images matter.
 - Accessibility floor: visible keyboard focus, `useReducedMotion()` honoured, Radix a11y, alt text required on every artwork image, custom cursor never traps interaction.
 - Performance floor: 60fps target; lazy-load 3D and below-fold media; GPU-friendly transforms only (`transform`/`opacity`, never animate layout); Lighthouse CI in the pipeline.

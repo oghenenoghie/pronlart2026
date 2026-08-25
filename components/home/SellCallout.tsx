@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { Reveal } from "@/components/motion/Reveal";
 import { ArtworkImage } from "@/components/art/ArtworkImage";
+import { LinkButton } from "@/components/ui/button";
 import type { Artwork } from "@/types";
 
 const TRUST_MARKS = [
@@ -31,12 +31,9 @@ export function SellCallout({ artwork }: { artwork: Artwork }) {
             joins the collection online and in the archive, priced and placed alongside the
             gallery&rsquo;s represented artists, with provenance carried through to sale.
           </p>
-          <Link
-            href="/sell"
-            className="mt-8 inline-block border border-gilt px-8 py-3 font-body text-label uppercase tracking-[0.18em] text-gesso transition-colors hover:bg-gilt hover:text-ink"
-          >
+          <LinkButton href="/sell" className="mt-8">
             Submit Your Work
-          </Link>
+          </LinkButton>
         </Reveal>
       </div>
 
