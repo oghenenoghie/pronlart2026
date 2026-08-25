@@ -1,12 +1,18 @@
-import { type NextRequest } from "next/server";
-import { updateSession } from "@/lib/supabase/middleware";
+import { NextResponse, type NextRequest } from "next/server";
 
-export async function middleware(request: NextRequest) {
-  return updateSession(request);
+const SESSION_COOKIE = "neon_session";
+
+// Cheap existence check only — the public site never depends on the auth
+// server being reachable. Full session/role verification happens in
+// requireAdmin() on each protected page.
+export function middleware(request: NextRequest) {
+  if (!request.cookies.has(SESSION_COOKIE)) {
+    const loginUrl = new URL("/admin/login", request.url);
+    return NextResponse.redirect(loginUrl);
+  }
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
-  ],
+  matcher: ["/admin", "/admin/((?!login).*)"],
 };

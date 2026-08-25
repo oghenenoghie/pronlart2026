@@ -2,24 +2,18 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import type { Database } from "@/types/supabase";
-
-type MovementUpdate = Database["public"]["Tables"]["movements"]["Update"];
+import { sql } from "@/lib/db";
 
 export async function updateMovement(id: string, formData: FormData) {
-  const heroImagePath = String(formData.get("heroImagePath") ?? "").trim();
+  const era = String(formData.get("era") ?? "").trim();
+  const summary = String(formData.get("summary") ?? "").trim();
+  const blurb = String(formData.get("blurb") ?? "").trim();
+  const heroImage = String(formData.get("heroImagePath") ?? "").trim() || null;
 
-  const payload: MovementUpdate = {
-    era: String(formData.get("era") ?? "").trim(),
-    summary: String(formData.get("summary") ?? "").trim(),
-    blurb: String(formData.get("blurb") ?? "").trim(),
-    hero_image: heroImagePath || null,
-  };
-
-  const supabase = createClient();
-  const { error } = await supabase.from("movements").update(payload).eq("id", id);
-  if (error) throw new Error(error.message);
+  await sql`
+    update movements set era = ${era}, summary = ${summary}, blurb = ${blurb}, hero_image = ${heroImage}
+    where id = ${id}
+  `;
 
   revalidatePath("/admin/movements");
   revalidatePath("/movements");

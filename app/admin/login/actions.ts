@@ -1,17 +1,16 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { signInWithEmail } from "@/lib/auth/server";
 
 export async function signIn(formData: FormData) {
   const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");
 
-  const supabase = createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { error } = await signInWithEmail(email, password);
 
   if (error) {
-    redirect(`/admin/login?error=${encodeURIComponent(error.message)}`);
+    redirect(`/admin/login?error=${encodeURIComponent(error)}`);
   }
 
   redirect("/admin");

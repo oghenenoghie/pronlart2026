@@ -6,7 +6,6 @@ import { StatusChip } from "@/components/art/StatusChip";
 import { EnquireSection } from "@/components/art/EnquireSection";
 import { Reveal } from "@/components/motion/Reveal";
 import { getArtwork } from "@/lib/data";
-import { supabaseImageUrl } from "@/lib/og-image";
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const artwork = await getArtwork(params.slug);
@@ -22,11 +21,11 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       ? {
           title,
           description: artwork.description,
-          images: [{ url: supabaseImageUrl(primary.path), width: primary.width, height: primary.height, alt: primary.alt }],
+          images: [{ url: primary.path, width: primary.width, height: primary.height, alt: primary.alt }],
         }
       : undefined,
     twitter: primary
-      ? { card: "summary_large_image", title, description: artwork.description, images: [supabaseImageUrl(primary.path)] }
+      ? { card: "summary_large_image", title, description: artwork.description, images: [primary.path] }
       : undefined,
   };
 }

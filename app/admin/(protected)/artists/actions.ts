@@ -2,13 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { sql } from "@/lib/db";
 import { slugify } from "@/lib/utils";
-import type { Database } from "@/types/supabase";
+import type { Artist } from "@/types";
 
-type ArtistInsert = Database["public"]["Tables"]["artists"]["Insert"];
-
-function buildArtistPayload(formData: FormData): ArtistInsert {
+function buildArtistPayload(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
   const slugInput = String(formData.get("slug") ?? "").trim();
   const portrait = String(formData.get("portraitPath") ?? "").trim();
@@ -19,14 +17,16 @@ function buildArtistPayload(formData: FormData): ArtistInsert {
     portrait: portrait || null,
     statement: String(formData.get("statement") ?? "").trim() || null,
     bio: String(formData.get("bio") ?? "").trim() || null,
-    status: String(formData.get("status") ?? "active") as Database["public"]["Enums"]["artist_status"],
+    status: String(formData.get("status") ?? "active") as Artist["status"],
   };
 }
 
 export async function createArtist(formData: FormData) {
-  const supabase = createClient();
-  const { error } = await supabase.from("artists").insert(buildArtistPayload(formData));
-  if (error) throw new Error(error.message);
+  const p = buildArtistPayload(formData);
+  await sql`
+    insert into artists (name, slug, portrait, statement, bio, status)
+    values (${p.name}, ${p.slug}, ${p.portrait}, ${p.statement}, ${p.bio}, ${p.status})
+  `;
 
   revalidatePath("/admin/artists");
   revalidatePath("/artists");
@@ -34,9 +34,12 @@ export async function createArtist(formData: FormData) {
 }
 
 export async function updateArtist(id: string, formData: FormData) {
-  const supabase = createClient();
-  const { error } = await supabase.from("artists").update(buildArtistPayload(formData)).eq("id", id);
-  if (error) throw new Error(error.message);
+  const p = buildArtistPayload(formData);
+  await sql`
+    update artists set name = ${p.name}, slug = ${p.slug}, portrait = ${p.portrait},
+      statement = ${p.statement}, bio = ${p.bio}, status = ${p.status}
+    where id = ${id}
+  `;
 
   revalidatePath("/admin/artists");
   revalidatePath("/artists");
@@ -44,9 +47,7 @@ export async function updateArtist(id: string, formData: FormData) {
 }
 
 export async function deleteArtist(id: string) {
-  const supabase = createClient();
-  const { error } = await supabase.from("artists").delete().eq("id", id);
-  if (error) throw new Error(error.message);
+  await sql`delete from artists where id = ${id}`;
 
   revalidatePath("/admin/artists");
   revalidatePath("/artists");

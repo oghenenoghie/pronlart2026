@@ -1,9 +1,7 @@
 "use client";
 
 import { useId, useState, type ChangeEvent } from "react";
-import { createClient } from "@/lib/supabase/client";
-
-const BUCKET = "artworks";
+import { upload } from "@vercel/blob/client";
 
 function readImageDimensions(file: File): Promise<{ width: number; height: number }> {
   return new Promise((resolve, reject) => {
@@ -22,11 +20,12 @@ function readImageDimensions(file: File): Promise<{ width: number; height: numbe
 }
 
 /**
- * Uploads straight from the browser to Storage under the signed-in admin's
- * own session (see the storage_admin_write_policies migration) — the file
- * bytes never pass through the Next.js server. Exposes the resulting path
- * (and probed width/height) as hidden inputs so a normal form submission /
- * Server Action picks them up like any other field.
+ * Uploads straight from the browser to Vercel Blob via a signed client
+ * token (see app/api/blob/upload/route.ts, which gates issuance on an
+ * admin session) — the file bytes never pass through our own server.
+ * Exposes the resulting public URL (and probed width/height) as hidden
+ * inputs so a normal form submission / Server Action picks them up like
+ * any other field.
  */
 export function ImageUploadField({
   name,
@@ -61,16 +60,16 @@ export function ImageUploadField({
     try {
       const dims = await readImageDimensions(file);
       const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
-      const objectPath = `${pathPrefix}/${crypto.randomUUID()}.${ext}`;
+      const objectName = `${pathPrefix}/${crypto.randomUUID()}.${ext}`;
 
-      const supabase = createClient();
-      const { error: uploadError } = await supabase.storage
-        .from(BUCKET)
-        .upload(objectPath, file, { contentType: file.type || "image/jpeg", upsert: true });
-      if (uploadError) throw uploadError;
+      const blob = await upload(objectName, file, {
+        access: "public",
+        handleUploadUrl: "/api/blob/upload",
+        contentType: file.type || "image/jpeg",
+      });
 
       setDimensions(dims);
-      setPath(objectPath);
+      setPath(blob.url);
       setStatus("idle");
     } catch (err) {
       setError((err as Error).message);
