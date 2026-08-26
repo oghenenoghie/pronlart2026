@@ -7,6 +7,8 @@ import { EnquireSection } from "@/components/art/EnquireSection";
 import { Reveal } from "@/components/motion/Reveal";
 import { getArtwork } from "@/lib/data";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const artwork = await getArtwork(params.slug);
   if (!artwork) return {};

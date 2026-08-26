@@ -4,6 +4,8 @@ import { Reveal } from "@/components/motion/Reveal";
 import { StaggerGroup, StaggerItem } from "@/components/motion/Stagger";
 import { listMovementsWithCounts } from "@/lib/data";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Movements",
   description: "Thirteen movements, from Renaissance to Bronze — the classes that curate every work in the gallery.",

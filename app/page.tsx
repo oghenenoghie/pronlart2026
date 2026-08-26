@@ -6,6 +6,8 @@ import { MovementsTeaser } from "@/components/common/MovementsTeaser";
 import { LinkButton } from "@/components/ui/button";
 import { listArtworks, listMovementsWithCounts } from "@/lib/data";
 
+export const dynamic = "force-dynamic";
+
 const EXHIBITION_SIZE = 6;
 
 export default async function Home() {

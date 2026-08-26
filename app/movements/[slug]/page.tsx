@@ -7,6 +7,8 @@ import { Reveal } from "@/components/motion/Reveal";
 import { StaggerGroup, StaggerItem } from "@/components/motion/Stagger";
 import { getMovement, listArtworks } from "@/lib/data";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const movement = await getMovement(params.slug);
   if (!movement) return {};
