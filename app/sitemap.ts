@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 import { listArtists, listArtworks, listMovements } from "@/lib/data";
 
+export const dynamic = "force-dynamic";
+
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 const STATIC_ROUTES = ["", "/gallery", "/movements", "/artists", "/archive", "/sell", "/about", "/contact"];

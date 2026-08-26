@@ -6,7 +6,8 @@ import { EmptyState } from "@/components/common/EmptyState";
 import { Reveal } from "@/components/motion/Reveal";
 import { StaggerGroup, StaggerItem } from "@/components/motion/Stagger";
 import { getMovement, listArtworks } from "@/lib/data";
-import { supabaseImageUrl } from "@/lib/og-image";
+
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const movement = await getMovement(params.slug);
@@ -19,11 +20,11 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       ? {
           title: movement.name,
           description: movement.summary,
-          images: [{ url: supabaseImageUrl(movement.heroImage), alt: movement.name }],
+          images: [{ url: movement.heroImage, alt: movement.name }],
         }
       : undefined,
     twitter: movement.heroImage
-      ? { card: "summary_large_image", title: movement.name, description: movement.summary, images: [supabaseImageUrl(movement.heroImage)] }
+      ? { card: "summary_large_image", title: movement.name, description: movement.summary, images: [movement.heroImage] }
       : undefined,
   };
 }

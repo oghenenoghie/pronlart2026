@@ -2,6 +2,9 @@ import { requireAdmin } from "@/lib/admin-auth";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { signOut } from "./actions";
 
+// Session data depends on cookies — this subtree can't be statically rendered.
+export const dynamic = "force-dynamic";
+
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const admin = await requireAdmin();
 

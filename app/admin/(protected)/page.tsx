@@ -1,25 +1,32 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { sql } from "@/lib/db";
 
 export default async function AdminDashboardPage() {
-  const supabase = createClient();
-
-  const [artworks, artists, mediums, movements, openEnquiries, pendingSubmissions] = await Promise.all([
-    supabase.from("artworks").select("*", { count: "exact", head: true }),
-    supabase.from("artists").select("*", { count: "exact", head: true }),
-    supabase.from("mediums").select("*", { count: "exact", head: true }),
-    supabase.from("movements").select("*", { count: "exact", head: true }),
-    supabase.from("enquiries").select("*", { count: "exact", head: true }).eq("status", "open"),
-    supabase.from("sell_submissions").select("*", { count: "exact", head: true }).eq("status", "pending"),
-  ]);
+  const rows = (await sql`
+    select
+      (select count(*) from artworks)::int as artworks,
+      (select count(*) from artists)::int as artists,
+      (select count(*) from mediums)::int as mediums,
+      (select count(*) from movements)::int as movements,
+      (select count(*) from enquiries where status = 'open')::int as open_enquiries,
+      (select count(*) from sell_submissions where status = 'pending')::int as pending_submissions
+  `) as unknown as {
+    artworks: number;
+    artists: number;
+    mediums: number;
+    movements: number;
+    open_enquiries: number;
+    pending_submissions: number;
+  }[];
+  const counts = rows[0];
 
   const cards = [
-    { href: "/admin/artworks", label: "Artworks", count: artworks.count ?? 0 },
-    { href: "/admin/artists", label: "Artists", count: artists.count ?? 0 },
-    { href: "/admin/mediums", label: "Mediums", count: mediums.count ?? 0 },
-    { href: "/admin/movements", label: "Movements", count: movements.count ?? 0 },
-    { href: "/admin/enquiries", label: "Open enquiries", count: openEnquiries.count ?? 0 },
-    { href: "/admin/submissions", label: "Pending submissions", count: pendingSubmissions.count ?? 0 },
+    { href: "/admin/artworks", label: "Artworks", count: counts.artworks },
+    { href: "/admin/artists", label: "Artists", count: counts.artists },
+    { href: "/admin/mediums", label: "Mediums", count: counts.mediums },
+    { href: "/admin/movements", label: "Movements", count: counts.movements },
+    { href: "/admin/enquiries", label: "Open enquiries", count: counts.open_enquiries },
+    { href: "/admin/submissions", label: "Pending submissions", count: counts.pending_submissions },
   ];
 
   return (

@@ -3,6 +3,8 @@ import { SellForm } from "@/components/forms/SellForm";
 import { Reveal } from "@/components/motion/Reveal";
 import { listMediums, listMovements } from "@/lib/data";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Sell",
   description: "Submit a work to be considered for the gallery.",

@@ -6,6 +6,8 @@ import { StaggerGroup, StaggerItem } from "@/components/motion/Stagger";
 import { LinkButton } from "@/components/ui/button";
 import { listArtworks } from "@/lib/data";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Archive",
   description: "Sold and past works — a permanent record of what has shown at Pronlart.",

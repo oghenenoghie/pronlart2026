@@ -1,6 +1,6 @@
 import "server-only";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getSession } from "@/lib/auth/server";
 
 export type AdminSession = {
   userId: string;
@@ -8,18 +8,13 @@ export type AdminSession = {
 };
 
 export async function requireAdmin(): Promise<AdminSession> {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const session = await getSession();
 
-  if (!user) redirect("/admin/login");
+  if (!session?.user) redirect("/admin/login");
 
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
-
-  if (profile?.role !== "admin") {
+  if (session.user.role !== "admin") {
     redirect(`/admin/login?error=${encodeURIComponent("That account doesn't have admin access.")}`);
   }
 
-  return { userId: user.id, email: user.email ?? null };
+  return { userId: session.user.id, email: session.user.email ?? null };
 }

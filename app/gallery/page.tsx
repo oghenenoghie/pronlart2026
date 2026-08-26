@@ -9,6 +9,8 @@ import { StaggerGroup, StaggerItem } from "@/components/motion/Stagger";
 import { LinkButton } from "@/components/ui/button";
 import { listArtworks, listMovementsWithCounts, type ArtworkFilters } from "@/lib/data";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Gallery",
   description: "Browse original paintings, sculpture and bronze — filter by movement and availability.",
