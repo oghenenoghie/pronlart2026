@@ -17,7 +17,7 @@ import { cookies } from "next/headers";
  */
 
 const SESSION_COOKIE = "neon_session";
-const UPSTREAM_COOKIE_NAME = "__Secure-neonauth.session_token";
+const UPSTREAM_COOKIE_NAME = "__Secure-neon-auth.session_token";
 
 function baseUrl(): string {
   const url = process.env.NEON_AUTH_BASE_URL;
