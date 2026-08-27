@@ -19,17 +19,19 @@ async function bootstrap(
     return NextResponse.json({ error: "email and password are required" }, { status: 400 });
   }
 
-  let existingCount: number | null = null;
-  try {
-    const existing = (await sql`select count(*)::int as count from neon_auth."user"`) as unknown as {
-      count: number;
-    }[];
-    existingCount = existing[0].count;
-  } catch {
-    existingCount = null; // DATABASE_URL may not point at the right branch; don't block sign-up on it.
-  }
-  if (existingCount !== null && existingCount > 0) {
-    return NextResponse.json({ error: "already bootstrapped" }, { status: 409 });
+  if (!authBaseUrl) {
+    let existingCount: number | null = null;
+    try {
+      const existing = (await sql`select count(*)::int as count from neon_auth."user"`) as unknown as {
+        count: number;
+      }[];
+      existingCount = existing[0].count;
+    } catch {
+      existingCount = null; // DATABASE_URL may not point at the right branch; don't block sign-up on it.
+    }
+    if (existingCount !== null && existingCount > 0) {
+      return NextResponse.json({ error: "already bootstrapped" }, { status: 409 });
+    }
   }
 
   const baseUrl = authBaseUrl || process.env.NEON_AUTH_BASE_URL;
