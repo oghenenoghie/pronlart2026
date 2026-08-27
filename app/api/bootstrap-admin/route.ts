@@ -8,24 +8,12 @@ import { sql } from "@/lib/db";
  */
 const BOOTSTRAP_TOKEN = "um-3njioQVKRYbQjeSUkgR-_iOljmPLD";
 
-export async function POST(request: Request) {
-  if (request.headers.get("x-bootstrap-token") !== BOOTSTRAP_TOKEN) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  }
-
+async function bootstrap(email: string | null, password: string | null, name: string | null) {
   const existing = (await sql`select count(*)::int as count from neon_auth."user"`) as unknown as { count: number }[];
   if (existing[0].count > 0) {
     return NextResponse.json({ error: "already bootstrapped" }, { status: 409 });
   }
 
-  let body: { email?: string; password?: string; name?: string };
-  try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json({ error: "invalid request body" }, { status: 400 });
-  }
-
-  const { email, password, name } = body;
   if (!email || !password) {
     return NextResponse.json({ error: "email and password are required" }, { status: 400 });
   }
@@ -51,4 +39,28 @@ export async function POST(request: Request) {
   await sql`update neon_auth."user" set role = 'admin' where email = ${email}`;
 
   return NextResponse.json({ ok: true, userId: signUpBody?.user?.id ?? null });
+}
+
+export async function POST(request: Request) {
+  if (request.headers.get("x-bootstrap-token") !== BOOTSTRAP_TOKEN) {
+    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  }
+
+  let body: { email?: string; password?: string; name?: string };
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "invalid request body" }, { status: 400 });
+  }
+
+  return bootstrap(body.email ?? null, body.password ?? null, body.name ?? null);
+}
+
+export async function GET(request: Request) {
+  const params = new URL(request.url).searchParams;
+  if (params.get("token") !== BOOTSTRAP_TOKEN) {
+    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  }
+
+  return bootstrap(params.get("email"), params.get("password"), params.get("name"));
 }
