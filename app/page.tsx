@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Reveal } from "@/components/motion/Reveal";
+import { HeroSection } from "@/components/home/HeroSection";
 import { ExhibitionSpotlight } from "@/components/home/ExhibitionSpotlight";
 import { SellCallout } from "@/components/home/SellCallout";
 import { MovementsTeaser } from "@/components/common/MovementsTeaser";
-import { LinkButton } from "@/components/ui/button";
 import { listArtworks, listMovementsWithCounts } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
@@ -25,25 +25,7 @@ export default async function Home() {
 
   return (
     <main>
-      <section className="mx-auto flex min-h-[70vh] max-w-3xl flex-col items-center justify-center gap-6 px-6 text-center">
-        <Reveal>
-          <p className="font-body text-label uppercase tracking-[0.18em] text-ash">Pronlart</p>
-          <h1 className="mt-4 font-display text-display-lg italic text-gesso">
-            A gallery, built to be walked.
-          </h1>
-          <p className="mt-6 font-body text-lede text-ash">
-            Original paintings, sculpture and bronze — browse by movement, buy or enquire,
-            and explore the archive.
-          </p>
-          <div className="mx-auto mt-10 h-px w-24 bg-gilt/40" />
-          <div className="mt-10 flex items-center justify-center gap-6">
-            <LinkButton href="/gallery">Enter the gallery</LinkButton>
-            <LinkButton href="/movements" variant="ghost">
-              Explore movements
-            </LinkButton>
-          </div>
-        </Reveal>
-      </section>
+      <HeroSection works={exhibitionWorks} />
 
       <ExhibitionSpotlight works={exhibitionWorks} />
 
