@@ -25,6 +25,16 @@ function baseUrl(): string {
   return url;
 }
 
+/**
+ * Better Auth rejects email/password requests with no callbackURL unless an
+ * Origin header is present (it uses Origin against trustedOrigins as its
+ * CSRF check) — a browser sends this automatically, but our server-side
+ * fetch to the auth server doesn't unless we set it explicitly.
+ */
+function siteOrigin(): string {
+  return process.env.NEXT_PUBLIC_SITE_URL ?? "https://pronlart2026.vercel.app";
+}
+
 function extractUpstreamSessionCookie(res: Response): string | null {
   const cookieStrings =
     typeof res.headers.getSetCookie === "function" ? res.headers.getSetCookie() : [res.headers.get("set-cookie") ?? ""];
@@ -49,7 +59,7 @@ export async function signInWithEmail(
 ): Promise<{ error: string | null }> {
   const res = await fetch(`${baseUrl()}/sign-in/email`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", Origin: siteOrigin() },
     body: JSON.stringify({ email, password }),
   });
 
@@ -80,7 +90,7 @@ export async function signOut(): Promise<void> {
   if (token) {
     await fetch(`${baseUrl()}/sign-out`, {
       method: "POST",
-      headers: { cookie: `${UPSTREAM_COOKIE_NAME}=${token}` },
+      headers: { cookie: `${UPSTREAM_COOKIE_NAME}=${token}`, Origin: siteOrigin() },
     }).catch(() => undefined);
   }
   cookies().delete(SESSION_COOKIE);
