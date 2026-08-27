@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import { signInWithEmail } from "@/lib/auth/server";
 
-/** Temporary diagnostic: confirms sign-in works end-to-end. Remove after use. */
+/** Temporary diagnostic: inspects the raw Neon Auth sign-in response. Remove after use. */
 const CHECK_TOKEN = "ADysdCXzpBhDHfsElHG0G9aYFD7SV7qC";
 
 export async function GET(request: Request) {
@@ -16,6 +15,28 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "email and password are required" }, { status: 400 });
   }
 
-  const result = await signInWithEmail(email, password);
-  return NextResponse.json(result);
+  const baseUrl = process.env.NEON_AUTH_BASE_URL;
+  const res = await fetch(`${baseUrl}/sign-in/email`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Origin: "https://pronlart2026.vercel.app" },
+    body: JSON.stringify({ email, password }),
+  });
+
+  const body = await res.json().catch(() => null);
+  const setCookieViaGetSetCookie =
+    typeof res.headers.getSetCookie === "function" ? res.headers.getSetCookie() : "getSetCookie unsupported";
+  const setCookieSingle = res.headers.get("set-cookie");
+  const allHeaders: Record<string, string> = {};
+  res.headers.forEach((value, key) => {
+    allHeaders[key] = value;
+  });
+
+  return NextResponse.json({
+    ok: res.ok,
+    status: res.status,
+    body,
+    setCookieViaGetSetCookie,
+    setCookieSingle,
+    allHeaders,
+  });
 }
