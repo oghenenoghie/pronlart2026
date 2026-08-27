@@ -25,7 +25,7 @@ async function bootstrap(
       count: number;
     }[];
     existingCount = existing[0].count;
-  } catch (err) {
+  } catch {
     existingCount = null; // DATABASE_URL may not point at the right branch; don't block sign-up on it.
   }
   if (existingCount !== null && existingCount > 0) {
