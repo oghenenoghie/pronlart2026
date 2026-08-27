@@ -7,6 +7,7 @@ import { sql } from "@/lib/db";
  * Delete this route once the first admin account exists.
  */
 const BOOTSTRAP_TOKEN = "um-3njioQVKRYbQjeSUkgR-_iOljmPLD";
+const TRUSTED_ORIGIN = "https://pronlart2026.vercel.app";
 
 async function bootstrap(email: string | null, password: string | null, name: string | null) {
   const existing = (await sql`select count(*)::int as count from neon_auth."user"`) as unknown as { count: number }[];
@@ -25,7 +26,7 @@ async function bootstrap(email: string | null, password: string | null, name: st
 
   const signUpRes = await fetch(`${baseUrl}/sign-up/email`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", Origin: TRUSTED_ORIGIN },
     body: JSON.stringify({ email, password, name: name ?? "Pronlart Admin" }),
   });
   const signUpBody = await signUpRes.json().catch(() => null);
