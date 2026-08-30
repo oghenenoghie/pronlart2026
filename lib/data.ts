@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { sql } from "@/lib/db";
 import type { Artist, Artwork, ArtworkImage, ArtworkStatus, Medium, Movement } from "@/types";
 
@@ -37,15 +38,15 @@ export async function listMovements(): Promise<Movement[]> {
   return rows.map(toMovement);
 }
 
-export async function getMovement(slug: string): Promise<Movement | undefined> {
+export const getMovement = cache(async (slug: string): Promise<Movement | undefined> => {
   const rows = (await sql`select * from movements where slug = ${slug}`) as unknown as MovementRow[];
   return rows[0] ? toMovement(rows[0]) : undefined;
-}
+});
 
-export async function getMovementById(id: string): Promise<Movement | undefined> {
+export const getMovementById = cache(async (id: string): Promise<Movement | undefined> => {
   const rows = (await sql`select * from movements where id = ${id}`) as unknown as MovementRow[];
   return rows[0] ? toMovement(rows[0]) : undefined;
-}
+});
 
 export type MovementWithCount = Movement & { artworkCount: number };
 
@@ -91,15 +92,15 @@ export async function listArtists(): Promise<Artist[]> {
   return rows.map(toArtist);
 }
 
-export async function getArtist(slug: string): Promise<Artist | undefined> {
+export const getArtist = cache(async (slug: string): Promise<Artist | undefined> => {
   const rows = (await sql`select * from artists where slug = ${slug}`) as unknown as ArtistRow[];
   return rows[0] ? toArtist(rows[0]) : undefined;
-}
+});
 
-export async function getArtistById(id: string): Promise<Artist | undefined> {
+export const getArtistById = cache(async (id: string): Promise<Artist | undefined> => {
   const rows = (await sql`select * from artists where id = ${id}`) as unknown as ArtistRow[];
   return rows[0] ? toArtist(rows[0]) : undefined;
-}
+});
 
 export type ArtistWithCount = Artist & { artworkCount: number };
 
@@ -127,15 +128,15 @@ export async function listMediums(): Promise<Medium[]> {
   return rows.map(toMedium);
 }
 
-export async function getMedium(slug: string): Promise<Medium | undefined> {
+export const getMedium = cache(async (slug: string): Promise<Medium | undefined> => {
   const rows = (await sql`select * from mediums where slug = ${slug}`) as unknown as MediumRow[];
   return rows[0] ? toMedium(rows[0]) : undefined;
-}
+});
 
-export async function getMediumById(id: string): Promise<Medium | undefined> {
+export const getMediumById = cache(async (id: string): Promise<Medium | undefined> => {
   const rows = (await sql`select * from mediums where id = ${id}`) as unknown as MediumRow[];
   return rows[0] ? toMedium(rows[0]) : undefined;
-}
+});
 
 // Artworks ---------------------------------------------------------------
 
@@ -272,15 +273,15 @@ export async function listArtworks(filters: ArtworkFilters = {}): Promise<Artwor
   return rows.map(toArtwork);
 }
 
-export async function getArtwork(slug: string): Promise<Artwork | undefined> {
+export const getArtwork = cache(async (slug: string): Promise<Artwork | undefined> => {
   const rows = (await sql.query(`${ARTWORK_SELECT} where a.slug = $1`, [slug])) as unknown as ArtworkRow[];
   return rows[0] ? toArtwork(rows[0]) : undefined;
-}
+});
 
-export async function getArtworkById(id: string): Promise<Artwork | undefined> {
+export const getArtworkById = cache(async (id: string): Promise<Artwork | undefined> => {
   const rows = (await sql.query(`${ARTWORK_SELECT} where a.id = $1`, [id])) as unknown as ArtworkRow[];
   return rows[0] ? toArtwork(rows[0]) : undefined;
-}
+});
 
 // Enquiries ---------------------------------------------------------------
 
