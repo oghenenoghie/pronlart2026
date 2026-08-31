@@ -52,12 +52,7 @@ export function ArtistForm({
       </div>
 
       <div className="border-t border-line pt-6">
-        <ImageUploadField
-          name="portraitPath"
-          pathPrefix="admin-uploads/artists"
-          label="Portrait"
-          initialPath={artist?.portrait}
-        />
+        <ImageUploadField name="portraitPath" label="Portrait" initialPath={artist?.portrait} />
       </div>
 
       <button type="submit" className={submitButton}>

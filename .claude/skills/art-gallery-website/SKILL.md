@@ -50,7 +50,7 @@ Keep three principles in view on every screen:
 | Motion (3D) | **Three.js + React Three Fiber + Drei** | **Optional, lazy-loaded.** Framed-painting scene, one hero moment. Never the whole site. |
 | Data | **Neon (serverless Postgres)** | System of record — catalogue, enquiries, sell submissions. `@neondatabase/serverless` HTTP driver via `lib/db.ts` |
 | Auth | **Neon Auth (Managed Better Auth)** | `/admin/*` sign-in. Called directly over its REST API in `lib/auth/server.ts` — the `@neondatabase/auth` SDK requires Next.js 16+, and this app is on 14 |
-| Media | **Vercel Blob** | Hi-res artwork; browser uploads via a signed client token (`app/api/blob/upload`), served through `next/image`'s built-in optimizer (no custom loader — Blob URLs are already absolute) |
+| Media | **Neon Postgres (`images` table, bytea)** | Hi-res artwork stored as raw bytes in the same database as everything else — no separate object-storage service. Uploaded via `app/api/media/upload`, served via `app/api/images/[id]`, through `next/image`'s built-in optimizer |
 | Payments | Stripe (intl) + Paystack/Flutterwave (NG) + Tap/MyFatoorah (GCC) | Behind a single `PaymentProvider` seam |
 | Email | Resend | Enquiry, purchase, sell-submission notifications |
 | Search | Postgres FTS + `pg_trgm` (launch) → Meilisearch/Typesense (scale) | Title, artist, movement, medium |
@@ -204,8 +204,9 @@ Taxonomy is the backbone. Model it before building UI.
 | **SellSubmission** | Artist-submitted work to list | artist name/email, title, movement, medium, dimensions, asking price, images[], status(pending\|accepted\|declined) |
 | **Post** | Blog / journal / archive writing | title, slug, cover, body(mdx/portable text), published_at, tags[] |
 
-`Artwork.images[]` shape: `{ path, alt, isPrimary, width, height }` (`path` is the full
-public Vercel Blob URL; keep `width/height` to prevent layout shift). One `isPrimary: true`.
+`Artwork.images[]` shape: `{ path, alt, isPrimary, width, height }` (`path` is
+`/api/images/{id}`, this app's own serving route; keep `width/height` to prevent layout
+shift). One `isPrimary: true`.
 
 Use Postgres: `bigint` for money; `jsonb` for artist links and flexible metadata;
 `pg_trgm` GIN index on `artworks.title` for fuzzy search. Access control lives in the
@@ -236,15 +237,15 @@ into full essays on each movement page.
 
 ---
 
-## Media pipeline (Vercel Blob → next/image)
+## Media pipeline (Neon Postgres → next/image)
 
 The site lives or dies on image quality. Fine art must render crisp, colour-true and fast.
 
-- **Upload:** `ImageUploadField` uploads straight from the browser to Vercel Blob via `@vercel/blob/client`'s `upload()`, authorized by a signed token issued from `app/api/blob/upload` (which checks `requireAdmin`-equivalent session state before minting the token). File bytes never pass through our own server.
-- **Deliver:** Blob's `upload()`/`put()` return the full public URL directly, so `Artwork.images[].path` and `Movement.heroImage` store that URL as-is — no base-URL prefixing, no custom loader. `next.config.mjs` allowlists `*.public.blob.vercel-storage.com` via `images.remotePatterns` and lets Next's built-in Image Optimization API handle `webp`/`avif` variants. `priority` only on the hero/LCP work; everything below the fold lazy-loads.
+- **Upload:** `ImageUploadField` sends the raw file to `app/api/media/upload`, which checks the admin session, then inserts the bytes into the `images` table (`id uuid`, `data bytea`, `content_type`, `width`, `height`) via `lib/db.ts`'s `sql`. File bytes pass through our own server (no signed client-token handoff to a third party).
+- **Deliver:** the upload route returns the new row's `id`; `Artwork.images[].path` and `Movement.heroImage` store `/api/images/{id}` — a route on this same app, not an absolute external URL. `app/api/images/[id]/route.ts` streams the bytes back with an immutable long-lived `Cache-Control` header (rows are never updated in place — a re-upload creates a new row/id). No `images.remotePatterns` needed in `next.config.mjs` since these are same-origin; Next's built-in Image Optimization API still handles `webp`/`avif` variants on top. `priority` only on the hero/LCP work; everything below the fold lazy-loads.
 - **Colour fidelity:** never JPEG-crush originals; keep quality high on detail/zoom views — collectors judge on colour and surface. Preserve aspect ratio; no forced crops on the detail page (crops are fine for grid thumbs).
 - **Zoom:** pinch/scroll zoom on the detail page (`react-medium-image-zoom` or a lightbox) so buyers can inspect brushwork — not yet built.
-- **Scale path:** move to Cloudinary/imgproxy behind the same "store an absolute URL" convention if Blob ever becomes a bottleneck.
+- **Trade-off, deliberate:** storing bytes in Postgres means every image byte is served from this app's single Neon region rather than a CDN edge, and the database grows with every upload. Chosen over Vercel Blob specifically to keep the whole stack on one connection string — no second service with its own token/env-var to misconfigure. Move to Cloudinary/imgproxy/S3 behind the same "store a path, serve via a route" convention if this ever becomes a bottleneck.
 
 ---
 
@@ -305,10 +306,10 @@ app/
 ├── (site)/            layout, page (exhibition), gallery, artworks, movements, artists,
 │                      exhibitions, archive, sell, blog, about, contact, loading.tsx, error.tsx
 ├── admin/             login (Neon Auth sign-in), (protected)/ — artworks, artists, movements, mediums, enquiries, submissions
-└── api/               auth is called directly from server code (no proxy route — see lib/auth/server.ts); blob/upload, enquiry, sell-submit, checkout, revalidate
+└── api/               auth is called directly from server code (no proxy route — see lib/auth/server.ts); media/upload, images/[id], enquiry, sell-submit, checkout, revalidate
 components/
 ├── ui/                shadcn primitives + Button/LinkButton (buttonClass) — the one CTA style, never inline the border-gilt classes again
-├── admin/             AdminNav, ArtworkForm, ArtistForm, MovementForm, MediumForm, ImageUploadField (Vercel Blob), DeleteButton, StatusSelect
+├── admin/             AdminNav, ArtworkForm, ArtistForm, MovementForm, MediumForm, ImageUploadField (Neon `images` table), DeleteButton, StatusSelect
 ├── common/            Header (active link + mobile drawer), Footer, EmptyState, RouteError, Search, CustomCursor, Grain
 ├── art/               ArtworkCard, Placard, Gallery, Zoom, FacetRail, StatusChip
 ├── exhibition/        FeaturedCanvas, PaintingScene, ExhibitionScroll

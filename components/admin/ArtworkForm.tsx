@@ -189,7 +189,6 @@ export function ArtworkForm({
       <div className="border-t border-line pt-6">
         <ImageUploadField
           name="imagePath"
-          pathPrefix="admin-uploads/artworks"
           label="Primary image"
           initialPath={primaryImage?.path}
           initialWidth={primaryImage?.width}

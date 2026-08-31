@@ -1,7 +1,6 @@
 "use client";
 
 import { useId, useState, type ChangeEvent } from "react";
-import { upload } from "@vercel/blob/client";
 
 function readImageDimensions(file: File): Promise<{ width: number; height: number }> {
   return new Promise((resolve, reject) => {
@@ -20,23 +19,20 @@ function readImageDimensions(file: File): Promise<{ width: number; height: numbe
 }
 
 /**
- * Uploads straight from the browser to Vercel Blob via a signed client
- * token (see app/api/blob/upload/route.ts, which gates issuance on an
- * admin session) — the file bytes never pass through our own server.
- * Exposes the resulting public URL (and probed width/height) as hidden
- * inputs so a normal form submission / Server Action picks them up like
- * any other field.
+ * Uploads the raw file to /api/media/upload (see that route, which gates
+ * on an admin session and stores the bytes directly in Neon Postgres) and
+ * exposes the resulting serving path (/api/images/{id}) plus probed
+ * width/height as hidden inputs so a normal form submission / Server
+ * Action picks them up like any other field.
  */
 export function ImageUploadField({
   name,
-  pathPrefix,
   label,
   initialPath,
   initialWidth,
   initialHeight,
 }: {
   name: string;
-  pathPrefix: string;
   label: string;
   initialPath?: string | null;
   initialWidth?: number | null;
@@ -59,17 +55,24 @@ export function ImageUploadField({
 
     try {
       const dims = await readImageDimensions(file);
-      const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
-      const objectName = `${pathPrefix}/${crypto.randomUUID()}.${ext}`;
 
-      const blob = await upload(objectName, file, {
-        access: "public",
-        handleUploadUrl: "/api/blob/upload",
-        contentType: file.type || "image/jpeg",
+      const res = await fetch("/api/media/upload", {
+        method: "POST",
+        headers: {
+          "Content-Type": file.type || "image/jpeg",
+          "X-Image-Width": String(dims.width),
+          "X-Image-Height": String(dims.height),
+        },
+        body: file,
       });
 
+      const body = (await res.json()) as { id?: string; error?: string };
+      if (!res.ok || !body.id) {
+        throw new Error(body.error ?? "Upload failed.");
+      }
+
       setDimensions(dims);
-      setPath(blob.url);
+      setPath(`/api/images/${body.id}`);
       setStatus("idle");
     } catch (err) {
       setError((err as Error).message);

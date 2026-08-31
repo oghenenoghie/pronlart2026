@@ -40,12 +40,7 @@ export function MovementForm({
       </div>
 
       <div className="border-t border-line pt-6">
-        <ImageUploadField
-          name="heroImagePath"
-          pathPrefix="admin-uploads/movements"
-          label="Hero image"
-          initialPath={movement.heroImage}
-        />
+        <ImageUploadField name="heroImagePath" label="Hero image" initialPath={movement.heroImage} />
       </div>
 
       <button type="submit" className={submitButton}>
