@@ -4,16 +4,17 @@ import { HeroSection } from "@/components/home/HeroSection";
 import { ExhibitionSpotlight } from "@/components/home/ExhibitionSpotlight";
 import { SellCallout } from "@/components/home/SellCallout";
 import { MovementsTeaser } from "@/components/common/MovementsTeaser";
-import { listArtworks, listMovementsWithCounts } from "@/lib/data";
+import { getSellCalloutImage, listArtworks, listMovementsWithCounts } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
 const EXHIBITION_SIZE = 6;
 
 export default async function Home() {
-  const [featured, movements] = await Promise.all([
+  const [featured, movements, sellCalloutImage] = await Promise.all([
     listArtworks({ featured: true, sort: "newest" }),
     listMovementsWithCounts(),
+    getSellCalloutImage(),
   ]);
 
   // Never let the signature exhibition go empty just because nothing's been
@@ -23,11 +24,17 @@ export default async function Home() {
       ? featured
       : (await listArtworks({ status: "available", sort: "newest" })).slice(0, EXHIBITION_SIZE);
 
+  // The sell pitch image is admin-configurable (/admin/settings); fall back
+  // to a work from the current exhibition until one's been set.
+  const fallbackArtwork = exhibitionWorks[EXHIBITION_SIZE - 1];
+  const fallbackImage = fallbackArtwork?.images.find((img) => img.isPrimary) ?? fallbackArtwork?.images[0];
+  const sellImage = sellCalloutImage ?? fallbackImage;
+
   return (
     <main>
       <HeroSection works={exhibitionWorks} />
 
-      <SellCallout artwork={exhibitionWorks[EXHIBITION_SIZE - 1]} />
+      <SellCallout image={sellImage} />
 
       <ExhibitionSpotlight works={exhibitionWorks} />
 

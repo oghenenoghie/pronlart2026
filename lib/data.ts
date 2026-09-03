@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { sql } from "@/lib/db";
-import type { Artist, Artwork, ArtworkImage, ArtworkStatus, Medium, Movement } from "@/types";
+import type { Artist, Artwork, ArtworkImage, ArtworkStatus, Medium, Movement, SiteImage } from "@/types";
 
 /**
  * Data-access seam, backed by Neon Postgres. Pages and components only ever
@@ -418,4 +418,23 @@ export async function getSellSubmissionById(id: string): Promise<SellSubmissionW
 
 export async function updateSellSubmissionStatus(id: string, status: SellSubmissionStatus): Promise<void> {
   await sql`update sell_submissions set status = ${status} where id = ${id}`;
+}
+
+// Site settings ---------------------------------------------------------------
+
+const SELL_CALLOUT_IMAGE_KEY = "sell_callout_image";
+
+export async function getSellCalloutImage(): Promise<SiteImage | undefined> {
+  const rows = (await sql`
+    select value from site_settings where key = ${SELL_CALLOUT_IMAGE_KEY}
+  `) as unknown as { value: SiteImage }[];
+  return rows[0]?.value;
+}
+
+export async function setSellCalloutImage(image: SiteImage): Promise<void> {
+  await sql`
+    insert into site_settings (key, value, updated_at)
+    values (${SELL_CALLOUT_IMAGE_KEY}, ${JSON.stringify(image)}, now())
+    on conflict (key) do update set value = excluded.value, updated_at = excluded.updated_at
+  `;
 }

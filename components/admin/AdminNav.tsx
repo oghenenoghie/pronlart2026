@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { href: "/admin/movements", label: "Movements" },
   { href: "/admin/enquiries", label: "Enquiries" },
   { href: "/admin/submissions", label: "Submissions" },
+  { href: "/admin/settings", label: "Home page" },
 ];
 
 export function AdminNav() {

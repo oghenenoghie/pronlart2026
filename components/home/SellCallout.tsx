@@ -1,7 +1,7 @@
+import Image from "next/image";
 import { Reveal } from "@/components/motion/Reveal";
-import { ArtworkImage } from "@/components/art/ArtworkImage";
 import { LinkButton } from "@/components/ui/button";
-import type { Artwork } from "@/types";
+import type { SiteImage } from "@/types";
 
 const TRUST_MARKS = [
   "13 Movements",
@@ -14,16 +14,28 @@ const TRUST_MARKS = [
 
 /**
  * Dark band pitching the sell flow, handing off to a white-cube trust
- * strip. The image is optional — a work in the current exhibition if one's
- * available — so this section never depends on inventory existing.
+ * strip. The image is admin-configurable (see /admin/settings) rather than
+ * tied to catalogue inventory, so it stays stable regardless of what's
+ * currently featured.
  */
-export function SellCallout({ artwork }: { artwork?: Artwork }) {
+export function SellCallout({ image }: { image?: SiteImage }) {
   return (
     <section className="border-t border-line bg-ink">
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 sm:py-28 md:grid-cols-2 md:gap-20">
         <Reveal>
-          {artwork ? (
-            <ArtworkImage artwork={artwork} className="w-full border border-line" />
+          {image ? (
+            <div
+              className="relative w-full overflow-hidden border border-line"
+              style={{ aspectRatio: `${image.width} / ${image.height}` }}
+            >
+              <Image
+                src={image.path}
+                alt={image.alt}
+                fill
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="object-cover"
+              />
+            </div>
           ) : (
             <div className="aspect-[4/5] w-full border border-line" style={{ background: "hsl(40 8% 10%)" }} />
           )}
