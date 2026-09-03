@@ -17,16 +17,20 @@ export function MovementsTeaser({ movements }: { movements: MovementWithCount[] 
         </Link>
       </div>
 
-      <div className="mt-10 grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-4">
+      <div className="no-scrollbar mt-10 flex snap-x snap-mandatory gap-6 overflow-x-auto pb-2">
         {sorted.map((movement) => (
-          <Link key={movement.id} href={`/movements/${movement.slug}`} className="group block">
+          <Link
+            key={movement.id}
+            href={`/movements/${movement.slug}`}
+            className="group block w-[45vw] shrink-0 snap-start sm:w-[28vw] lg:w-[220px]"
+          >
             <div className="relative aspect-[4/5] overflow-hidden border border-line transition-colors group-hover:border-gilt/50">
               {movement.heroImage ? (
                 <Image
                   src={movement.heroImage}
                   alt={movement.name}
                   fill
-                  sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
+                  sizes="(min-width: 1024px) 220px, (min-width: 640px) 28vw, 45vw"
                   className="object-cover"
                 />
               ) : (

@@ -27,11 +27,11 @@ export default async function Home() {
     <main>
       <HeroSection works={exhibitionWorks} />
 
+      <SellCallout artwork={exhibitionWorks[EXHIBITION_SIZE - 1]} />
+
       <ExhibitionSpotlight works={exhibitionWorks} />
 
       <MovementsTeaser movements={movements} />
-
-      <SellCallout artwork={exhibitionWorks[EXHIBITION_SIZE - 1]} />
 
       <Reveal>
         <section className="mx-auto max-w-6xl border-t border-line px-6 py-16">
