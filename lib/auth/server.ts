@@ -32,7 +32,7 @@ function baseUrl(): string {
  * fetch to the auth server doesn't unless we set it explicitly.
  */
 function siteOrigin(): string {
-  return process.env.NEXT_PUBLIC_SITE_URL ?? "https://pronlart2026.vercel.app";
+  return process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.b-edgeartworks.com";
 }
 
 function extractUpstreamSessionCookie(res: Response): string | null {
