@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 export default function AdminLoginPage({ searchParams }: { searchParams: { error?: string } }) {
   return (
     <div className="mx-auto flex min-h-screen max-w-sm flex-col justify-center px-6">
-      <p className="font-body text-label uppercase tracking-[0.18em] text-ash">Pronlart</p>
+      <p className="font-body text-label uppercase tracking-[0.18em] text-ash">B-Edge Artworks</p>
       <h1 className="mt-2 font-display text-h2 italic text-gesso">Admin sign in</h1>
 
       {searchParams.error && <p className="mt-4 font-body text-sm text-red-400">{searchParams.error}</p>}

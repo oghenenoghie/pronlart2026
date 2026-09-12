@@ -11,7 +11,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="flex min-h-screen bg-ink text-gesso">
       <aside className="w-56 shrink-0 border-r border-line px-6 py-8">
-        <p className="font-display text-lg italic text-gesso">Pronlart admin</p>
+        <p className="font-display text-lg italic text-gesso">B-Edge Artworks admin</p>
         <p className="mt-1 truncate font-body text-xs text-ash">{admin.email}</p>
 
         <AdminNav />

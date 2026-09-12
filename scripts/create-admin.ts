@@ -4,7 +4,7 @@
  * `admin` role — mirrors the original "create in the dashboard, then
  * promote" pattern, just against Neon Auth instead of Supabase.
  *
- * Usage: npm run create-admin -- --email you@example.com --password 'a-strong-password' --name 'Pronlart Admin'
+ * Usage: npm run create-admin -- --email you@example.com --password 'a-strong-password' --name 'B-Edge Artworks Admin'
  */
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -34,7 +34,7 @@ async function main() {
 
   const email = readArg("--email");
   const password = readArg("--password");
-  const name = readArg("--name") ?? "Pronlart Admin";
+  const name = readArg("--name") ?? "B-Edge Artworks Admin";
   if (!email || !password) {
     throw new Error("Usage: npm run create-admin -- --email you@example.com --password 'a-strong-password'");
   }

@@ -4,7 +4,7 @@ import { buttonClass } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: "Get in touch with Pronlart.",
+  description: "Get in touch with B-Edge Artworks.",
 };
 
 export default function ContactPage() {
@@ -16,8 +16,8 @@ export default function ContactPage() {
           For enquiries about a specific work, use the enquire button on its page — that reaches us
           fastest. For everything else, write to us directly.
         </p>
-        <a href="mailto:hello@pronlart.example" className={buttonClass("primary", "mt-8")}>
-          hello@pronlart.example
+        <a href="mailto:hello@b-edgeartworks.com" className={buttonClass("primary", "mt-8")}>
+          hello@b-edgeartworks.com
         </a>
       </Reveal>
     </div>

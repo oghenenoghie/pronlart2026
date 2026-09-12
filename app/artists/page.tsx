@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Artists",
-  description: "The artists showing at Pronlart.",
+  description: "The artists showing at B-Edge Artworks.",
 };
 
 export default async function ArtistsPage() {

@@ -3,7 +3,7 @@ import { Reveal } from "@/components/motion/Reveal";
 
 export const metadata: Metadata = {
   title: "About",
-  description: "About Pronlart — a curated marketplace for original art.",
+  description: "About B-Edge Artworks — a curated marketplace for original art.",
 };
 
 export default function AboutPage() {
@@ -13,7 +13,7 @@ export default function AboutPage() {
         <h1 className="font-display text-display-lg italic text-gesso">About</h1>
         <div className="mt-8 space-y-6 font-body leading-relaxed text-ash">
           <p>
-            Pronlart brings artists and collectors together around original artworks — paintings,
+            B-Edge Artworks brings artists and collectors together around original artworks — paintings,
             sculpture, bronze and carving, curated by movement and shown the way a gallery would
             show them: art first, chrome second.
           </p>

@@ -24,7 +24,7 @@ export function Header() {
     <header className="relative border-b border-line">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
         <Link href="/" className="font-display text-lg italic text-gesso">
-          Pronlart
+          B-Edge Artworks
         </Link>
 
         <nav className="hidden items-center gap-6 md:flex">

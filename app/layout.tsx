@@ -14,19 +14,19 @@ const SITE_DESCRIPTION =
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Pronlart — Original Art & Painting Gallery",
-    template: "%s · Pronlart",
+    default: "B-Edge Artworks — Original Art & Painting Gallery",
+    template: "%s · B-Edge Artworks",
   },
   description: SITE_DESCRIPTION,
   openGraph: {
     type: "website",
-    siteName: "Pronlart",
-    title: "Pronlart — Original Art & Painting Gallery",
+    siteName: "B-Edge Artworks",
+    title: "B-Edge Artworks — Original Art & Painting Gallery",
     description: SITE_DESCRIPTION,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Pronlart — Original Art & Painting Gallery",
+    title: "B-Edge Artworks — Original Art & Painting Gallery",
     description: SITE_DESCRIPTION,
   },
 };

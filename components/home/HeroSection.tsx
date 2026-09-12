@@ -233,7 +233,7 @@ export function HeroSection({ works }: { works: Artwork[] }) {
 function StaticHero() {
   return (
     <section className="mx-auto flex min-h-[70vh] max-w-3xl flex-col items-center justify-center gap-6 px-6 text-center">
-      <p className="font-body text-label uppercase tracking-[0.18em] text-ash">Pronlart</p>
+      <p className="font-body text-label uppercase tracking-[0.18em] text-ash">B-Edge Artworks</p>
       <h1 className="mt-4 font-display text-display-lg italic text-gesso">A gallery, built to be walked.</h1>
       <p className="mt-6 font-body text-lede text-ash">
         Original paintings, sculpture and bronze — browse by movement, buy or enquire, and explore the archive.

@@ -1,4 +1,4 @@
-# Pronlart
+# B-Edge Artworks
 
 A curated marketplace for original paintings, sculpture and bronze — collectors
 browse and buy, artists submit work to sell, and visitors explore art through

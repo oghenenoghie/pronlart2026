@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Archive",
-  description: "Sold and past works — a permanent record of what has shown at Pronlart.",
+  description: "Sold and past works — a permanent record of what has shown at B-Edge Artworks.",
 };
 
 export default async function ArchivePage() {
