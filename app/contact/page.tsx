@@ -20,6 +20,25 @@ export default function ContactPage() {
           hello@b-edgeartworks.com
         </a>
       </Reveal>
+
+      <Reveal>
+        <div className="mt-16 border-t border-line pt-12">
+          <h2 className="font-display text-h3 italic text-gesso">Regional representatives</h2>
+          <div className="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2">
+            {REPRESENTATIVES.map((rep) => (
+              <div key={rep.region}>
+                <p className="font-body text-label uppercase tracking-[0.18em] text-gilt">{rep.region}</p>
+                <p className="mt-2 font-display text-lg italic text-gesso">{rep.name}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Reveal>
     </div>
   );
 }
+
+const REPRESENTATIVES = [
+  { region: "The Netherlands & Europe", name: "Fabian" },
+  { region: "UK & Ireland", name: "Gerald" },
+];
