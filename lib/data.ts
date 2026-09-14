@@ -420,6 +420,36 @@ export async function updateSellSubmissionStatus(id: string, status: SellSubmiss
   await sql`update sell_submissions set status = ${status} where id = ${id}`;
 }
 
+// Contact messages ---------------------------------------------------------------
+
+export type ContactMessageStatus = "open" | "responded" | "closed";
+
+type ContactMessageRow = {
+  id: string;
+  name: string;
+  email: string;
+  message: string;
+  status: ContactMessageStatus;
+  created_at: string;
+};
+
+export async function createContactMessage(input: { name: string; email: string; message: string }): Promise<void> {
+  await sql`
+    insert into contact_messages (name, email, message)
+    values (${input.name}, ${input.email}, ${input.message})
+  `;
+}
+
+export async function listContactMessages(): Promise<ContactMessageRow[]> {
+  return (await sql`
+    select * from contact_messages order by created_at desc
+  `) as unknown as ContactMessageRow[];
+}
+
+export async function updateContactMessageStatus(id: string, status: ContactMessageStatus): Promise<void> {
+  await sql`update contact_messages set status = ${status} where id = ${id}`;
+}
+
 // Site settings ---------------------------------------------------------------
 
 const SELL_CALLOUT_IMAGE_KEY = "sell_callout_image";

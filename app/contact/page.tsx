@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Reveal } from "@/components/motion/Reveal";
 import { buttonClass } from "@/components/ui/button";
+import { ContactForm } from "@/components/forms/ContactForm";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -19,6 +20,10 @@ export default function ContactPage() {
         <a href="mailto:hello@b-edgeartworks.com" className={buttonClass("primary", "mt-8")}>
           hello@b-edgeartworks.com
         </a>
+      </Reveal>
+
+      <Reveal>
+        <ContactForm />
       </Reveal>
 
       <Reveal>
