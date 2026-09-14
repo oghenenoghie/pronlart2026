@@ -34,6 +34,11 @@ export default function ContactPage() {
               <div key={rep.region}>
                 <p className="font-body text-label uppercase tracking-[0.18em] text-gilt">{rep.region}</p>
                 <p className="mt-2 font-display text-lg italic text-gesso">{rep.name}</p>
+                {rep.phone && (
+                  <a href={`tel:${rep.phone}`} className="mt-1 block font-body text-sm text-ash hover:text-gesso">
+                    {rep.phone}
+                  </a>
+                )}
               </div>
             ))}
           </div>
@@ -44,6 +49,6 @@ export default function ContactPage() {
 }
 
 const REPRESENTATIVES = [
-  { region: "The Netherlands & Europe", name: "Fabian" },
-  { region: "UK & Ireland", name: "Gerald" },
+  { region: "The Netherlands & Europe", name: "Fabian", phone: null },
+  { region: "UK & Ireland", name: "Gerald", phone: "+447916157480" },
 ];
