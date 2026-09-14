@@ -49,6 +49,6 @@ export default function ContactPage() {
 }
 
 const REPRESENTATIVES = [
-  { region: "The Netherlands & Europe", name: "Fabian", phone: null },
+  { region: "The Netherlands & Europe", name: "Fabian", phone: "+31 6 13723963" },
   { region: "UK & Ireland", name: "Gerald", phone: "+447916157480" },
 ];
