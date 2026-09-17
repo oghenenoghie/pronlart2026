@@ -10,7 +10,8 @@ export default async function AdminDashboardPage() {
       (select count(*) from movements)::int as movements,
       (select count(*) from enquiries where status = 'open')::int as open_enquiries,
       (select count(*) from sell_submissions where status = 'pending')::int as pending_submissions,
-      (select count(*) from contact_messages where status = 'open')::int as open_messages
+      (select count(*) from contact_messages where status = 'open')::int as open_messages,
+      (select count(*) from artworks where status = 'sold')::int as archived
   `) as unknown as {
     artworks: number;
     artists: number;
@@ -19,6 +20,7 @@ export default async function AdminDashboardPage() {
     open_enquiries: number;
     pending_submissions: number;
     open_messages: number;
+    archived: number;
   }[];
   const counts = rows[0];
 
@@ -30,6 +32,7 @@ export default async function AdminDashboardPage() {
     { href: "/admin/enquiries", label: "Open enquiries", count: counts.open_enquiries },
     { href: "/admin/submissions", label: "Pending submissions", count: counts.pending_submissions },
     { href: "/admin/contact", label: "Contact messages", count: counts.open_messages },
+    { href: "/admin/artworks?status=sold", label: "Archive", count: counts.archived },
   ];
 
   return (
