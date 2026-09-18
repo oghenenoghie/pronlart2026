@@ -42,7 +42,9 @@ export async function updateArtist(id: string, formData: FormData) {
   `;
 
   revalidatePath("/admin/artists");
+  revalidatePath(`/admin/artists/${id}/edit`);
   revalidatePath("/artists");
+  revalidatePath(`/artists/${p.slug}`);
   redirect("/admin/artists");
 }
 

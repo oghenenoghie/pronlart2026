@@ -84,7 +84,9 @@ export async function updateArtwork(id: string, formData: FormData) {
   `;
 
   revalidatePath("/admin/artworks");
+  revalidatePath(`/admin/artworks/${id}/edit`);
   revalidatePath("/gallery");
+  revalidatePath(`/artworks/${p.slug}`);
   redirect("/admin/artworks");
 }
 
