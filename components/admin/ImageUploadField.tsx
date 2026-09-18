@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useId, useState, type ChangeEvent } from "react";
 
 function readImageDimensions(file: File): Promise<{ width: number; height: number }> {
@@ -95,7 +96,17 @@ export function ImageUploadField({
       />
       {status === "uploading" && <p className="mt-2 font-body text-sm text-ash">Uploading…</p>}
       {status === "error" && <p className="mt-2 font-body text-sm text-red-400">{error}</p>}
-      {path && status !== "uploading" && <p className="mt-2 truncate font-body text-sm text-ash">{path}</p>}
+      {path && status !== "uploading" && (
+        <div className="mt-3">
+          <div
+            className="relative w-full max-w-xs overflow-hidden border border-line"
+            style={{ aspectRatio: dimensions ? `${dimensions.width} / ${dimensions.height}` : "4 / 5" }}
+          >
+            <Image src={path} alt="" fill sizes="320px" className="object-cover" />
+          </div>
+          <p className="mt-2 truncate font-body text-sm text-ash">{path}</p>
+        </div>
+      )}
 
       <input type="hidden" name={name} value={path} />
       <input type="hidden" name={`${name}Width`} value={dimensions?.width ?? ""} />
