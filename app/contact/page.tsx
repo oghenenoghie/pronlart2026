@@ -33,7 +33,7 @@ export default function ContactPage() {
             {REPRESENTATIVES.map((rep) => (
               <div key={rep.region}>
                 <p className="font-body text-label uppercase tracking-[0.18em] text-gilt">{rep.region}</p>
-                <p className="mt-2 font-display text-lg italic text-gesso">{rep.name}</p>
+                {rep.name && <p className="mt-2 font-display text-lg italic text-gesso">{rep.name}</p>}
                 {rep.phone && (
                   <a href={`tel:${rep.phone}`} className="mt-1 block font-body text-sm text-ash hover:text-gesso">
                     {rep.phone}
@@ -51,4 +51,5 @@ export default function ContactPage() {
 const REPRESENTATIVES = [
   { region: "The Netherlands & Europe", name: "Fabian", phone: "+31 6 13723963" },
   { region: "UK & Ireland", name: "Gerald", phone: "+447916157480" },
+  { region: "Nigeria", name: null, phone: "0811 399 6181" },
 ];
