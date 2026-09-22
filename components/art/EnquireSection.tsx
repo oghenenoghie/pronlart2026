@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { Button } from "@/components/ui/button";
 import { formatPrice, parseToMinorUnits } from "@/lib/money";
+import { fieldClass, fieldLabelClass } from "@/lib/utils";
 import type { ArtworkStatus } from "@/types";
 
 type Status = "idle" | "open" | "submitting" | "success" | "error";
@@ -57,79 +59,46 @@ export function EnquireSection({
       <div className="flex items-center gap-6">
         <p className="font-body text-lg font-medium text-gesso">{formatPrice(price, currency)}</p>
         {formStatus === "idle" && (
-          <button
-            type="button"
-            disabled={!canTransact}
-            onClick={() => setFormStatus("open")}
-            className="border border-gilt px-6 py-2.5 font-body text-label uppercase tracking-[0.18em] text-gesso transition-colors hover:bg-gilt hover:text-ink disabled:cursor-not-allowed disabled:border-line disabled:text-ash disabled:hover:bg-transparent"
-          >
+          <Button type="button" disabled={!canTransact} onClick={() => setFormStatus("open")}>
             {canTransact ? (isPoa ? "Enquire" : "Buy or enquire") : "Unavailable"}
-          </button>
+          </Button>
         )}
       </div>
 
       {(formStatus === "open" || formStatus === "submitting" || formStatus === "error") && (
         <form onSubmit={handleSubmit} className="mt-6 max-w-sm space-y-4 border-t border-line pt-6">
           <div>
-            <label htmlFor="name" className="font-body text-label uppercase tracking-[0.18em] text-ash">
+            <label htmlFor="name" className={fieldLabelClass}>
               Name
             </label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              required
-              className="mt-2 w-full border border-line bg-ink px-3 py-2 font-body text-sm text-gesso focus:border-gilt focus:outline-none"
-            />
+            <input id="name" name="name" type="text" required className={fieldClass} />
           </div>
           <div>
-            <label htmlFor="email" className="font-body text-label uppercase tracking-[0.18em] text-ash">
+            <label htmlFor="email" className={fieldLabelClass}>
               Email
             </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              className="mt-2 w-full border border-line bg-ink px-3 py-2 font-body text-sm text-gesso focus:border-gilt focus:outline-none"
-            />
+            <input id="email" name="email" type="email" required className={fieldClass} />
           </div>
           {isPoa && (
             <div>
-              <label htmlFor="offer" className="font-body text-label uppercase tracking-[0.18em] text-ash">
+              <label htmlFor="offer" className={fieldLabelClass}>
                 Your offer ({currency}, optional)
               </label>
-              <input
-                id="offer"
-                name="offer"
-                type="number"
-                min="0"
-                step="0.01"
-                className="mt-2 w-full border border-line bg-ink px-3 py-2 font-body text-sm text-gesso tabular-nums focus:border-gilt focus:outline-none"
-              />
+              <input id="offer" name="offer" type="number" min="0" step="0.01" className={`${fieldClass} tabular-nums`} />
             </div>
           )}
           <div>
-            <label htmlFor="message" className="font-body text-label uppercase tracking-[0.18em] text-ash">
+            <label htmlFor="message" className={fieldLabelClass}>
               Message
             </label>
-            <textarea
-              id="message"
-              name="message"
-              rows={3}
-              className="mt-2 w-full border border-line bg-ink px-3 py-2 font-body text-sm text-gesso focus:border-gilt focus:outline-none"
-            />
+            <textarea id="message" name="message" rows={3} className={fieldClass} />
           </div>
 
           {formStatus === "error" && <p className="font-body text-sm text-red-400">{errorMessage}</p>}
 
-          <button
-            type="submit"
-            disabled={formStatus === "submitting"}
-            className="border border-gilt px-6 py-2.5 font-body text-label uppercase tracking-[0.18em] text-gesso transition-colors hover:bg-gilt hover:text-ink disabled:cursor-not-allowed disabled:opacity-60"
-          >
+          <Button type="submit" disabled={formStatus === "submitting"}>
             {formStatus === "submitting" ? "Sending…" : "Send"}
-          </button>
+          </Button>
         </form>
       )}
 

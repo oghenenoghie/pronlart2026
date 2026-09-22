@@ -4,14 +4,31 @@ import Link from "next/link";
 import { ArtworkImage } from "@/components/art/ArtworkImage";
 import { StatusChip } from "@/components/art/StatusChip";
 import { EnquireSection } from "@/components/art/EnquireSection";
+import { Reveal } from "@/components/motion/Reveal";
 import { getArtwork } from "@/lib/data";
+
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const artwork = await getArtwork(params.slug);
   if (!artwork) return {};
+
+  const primary = artwork.images.find((img) => img.isPrimary) ?? artwork.images[0];
+  const title = `${artwork.title} — ${artwork.artist.name}`;
+
   return {
-    title: `${artwork.title} — ${artwork.artist.name}`,
+    title,
     description: artwork.description,
+    openGraph: primary
+      ? {
+          title,
+          description: artwork.description,
+          images: [{ url: primary.path, width: primary.width, height: primary.height, alt: primary.alt }],
+        }
+      : undefined,
+    twitter: primary
+      ? { card: "summary_large_image", title, description: artwork.description, images: [primary.path] }
+      : undefined,
   };
 }
 
@@ -21,9 +38,11 @@ export default async function ArtworkDetailPage({ params }: { params: { slug: st
 
   return (
     <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-6 py-16 md:grid-cols-2">
-      <ArtworkImage artwork={artwork} className="border border-line" />
+      <Reveal>
+        <ArtworkImage artwork={artwork} className="border border-line" priority />
+      </Reveal>
 
-      <div>
+      <Reveal>
         <Link
           href={`/movements/${artwork.movement.slug}`}
           className="font-body text-label uppercase tracking-[0.18em] text-ash hover:text-gesso"
@@ -74,7 +93,7 @@ export default async function ArtworkDetailPage({ params }: { params: { slug: st
           currency={artwork.currency}
           status={artwork.status}
         />
-      </div>
+      </Reveal>
     </div>
   );
 }

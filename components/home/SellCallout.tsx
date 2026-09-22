@@ -1,7 +1,7 @@
-import Link from "next/link";
+import Image from "next/image";
 import { Reveal } from "@/components/motion/Reveal";
-import { ArtworkImage } from "@/components/art/ArtworkImage";
-import type { Artwork } from "@/types";
+import { LinkButton } from "@/components/ui/button";
+import type { SiteImage } from "@/types";
 
 const TRUST_MARKS = [
   "13 Movements",
@@ -12,13 +12,33 @@ const TRUST_MARKS = [
   "Buyer Protection",
 ];
 
-/** Dark band pitching the sell flow, handing off to a white-cube trust strip. */
-export function SellCallout({ artwork }: { artwork: Artwork }) {
+/**
+ * Dark band pitching the sell flow, handing off to a white-cube trust
+ * strip. The image is admin-configurable (see /admin/settings) rather than
+ * tied to catalogue inventory, so it stays stable regardless of what's
+ * currently featured.
+ */
+export function SellCallout({ image }: { image?: SiteImage }) {
   return (
     <section className="border-t border-line bg-ink">
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 sm:py-28 md:grid-cols-2 md:gap-20">
         <Reveal>
-          <ArtworkImage artwork={artwork} className="w-full border border-line" />
+          {image ? (
+            <div
+              className="relative w-full overflow-hidden border border-line"
+              style={{ aspectRatio: `${image.width} / ${image.height}` }}
+            >
+              <Image
+                src={image.path}
+                alt={image.alt}
+                fill
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="object-cover"
+              />
+            </div>
+          ) : (
+            <div className="aspect-[4/5] w-full border border-line" style={{ background: "hsl(40 8% 10%)" }} />
+          )}
         </Reveal>
 
         <Reveal>
@@ -31,12 +51,9 @@ export function SellCallout({ artwork }: { artwork: Artwork }) {
             joins the collection online and in the archive, priced and placed alongside the
             gallery&rsquo;s represented artists, with provenance carried through to sale.
           </p>
-          <Link
-            href="/sell"
-            className="mt-8 inline-block border border-gilt px-8 py-3 font-body text-label uppercase tracking-[0.18em] text-gesso transition-colors hover:bg-gilt hover:text-ink"
-          >
+          <LinkButton href="/sell" className="mt-8">
             Submit Your Work
-          </Link>
+          </LinkButton>
         </Reveal>
       </div>
 

@@ -1,25 +1,31 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { MOVEMENTS_WITH_COUNTS } from "@/lib/mock-data";
+import { Reveal } from "@/components/motion/Reveal";
+import { StaggerGroup, StaggerItem } from "@/components/motion/Stagger";
+import { listMovementsWithCounts } from "@/lib/data";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Movements",
   description: "Thirteen movements, from Renaissance to Bronze — the classes that curate every work in the gallery.",
 };
 
-export default function MovementsPage() {
-  const movements = [...MOVEMENTS_WITH_COUNTS].sort((a, b) => a.sort - b.sort);
+export default async function MovementsPage() {
+  const movements = (await listMovementsWithCounts()).sort((a, b) => a.sort - b.sort);
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-16">
-      <h1 className="font-display text-display-lg italic text-gesso">Movements</h1>
-      <p className="mt-3 max-w-xl font-body text-lede text-ash">
-        Thirteen ways of looking at art, from Renaissance to Bronze — each a curated class in its own right.
-      </p>
+      <Reveal>
+        <h1 className="font-display text-display-lg italic text-gesso">Movements</h1>
+        <p className="mt-3 max-w-xl font-body text-lede text-ash">
+          Thirteen ways of looking at art, from Renaissance to Bronze — each a curated class in its own right.
+        </p>
+      </Reveal>
 
-      <ul className="mt-12 divide-y divide-line border-t border-line">
+      <StaggerGroup as="ul" className="mt-12 divide-y divide-line border-t border-line">
         {movements.map((movement) => (
-          <li key={movement.slug}>
+          <StaggerItem as="li" key={movement.slug}>
             <Link
               href={`/movements/${movement.slug}`}
               className="group flex items-baseline justify-between gap-6 py-6"
@@ -37,9 +43,9 @@ export default function MovementsPage() {
                 {movement.artworkCount} {movement.artworkCount === 1 ? "work" : "works"}
               </span>
             </Link>
-          </li>
+          </StaggerItem>
         ))}
-      </ul>
+      </StaggerGroup>
     </div>
   );
 }

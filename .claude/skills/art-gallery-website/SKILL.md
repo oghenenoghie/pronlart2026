@@ -4,12 +4,12 @@ description: >
   Full project context for a cinematic art & painting gallery website — a curated
   marketplace where collectors browse and buy original artworks, artists upload and
   sell work, and visitors explore art through movements (Renaissance → Bronze).
-  Built on Next.js App Router + TypeScript + Tailwind + shadcn/ui + Supabase, with a
+  Built on Next.js App Router + TypeScript + Tailwind + shadcn/ui + Neon Postgres, with a
   layered motion system (CSS → Motion → GSAP → optional Three.js/WebGL). Use this skill
   whenever working on the gallery in any way: building or styling pages and components,
   the cinematic scroll-driven exhibition, the artwork viewer / museum-label pattern,
-  movement ("art classes") pages, artist profiles, the shop/enquire/sell flows, Supabase
-  schema/queries/RLS, the media pipeline, or deployment. Trigger even without a project
+  movement ("art classes") pages, artist profiles, the shop/enquire/sell flows, Neon
+  schema/queries, Neon Auth, the media pipeline, or deployment. Trigger even without a project
   name — any mention of the painting gallery, art marketplace, movement/class pages,
   the cinematic exhibition, museum-label metadata, or Artwork/Artist/Movement entities
   qualifies. Reference this before generating any code so palette, type, entities and
@@ -48,8 +48,9 @@ Keep three principles in view on every screen:
 | Motion (primary) | **Motion / Framer Motion** | Page + section reveals, text, modals, gallery hover |
 | Motion (choreography) | **GSAP + ScrollTrigger** | Pinned sections, horizontal exhibition, scroll-driven camera. **Signature moments only.** |
 | Motion (3D) | **Three.js + React Three Fiber + Drei** | **Optional, lazy-loaded.** Framed-painting scene, one hero moment. Never the whole site. |
-| Data + Auth | **Supabase (Postgres)** | System of record, Auth, Row-Level Security, Storage |
-| Media | **Supabase Storage** (launch) → Cloudinary/imgproxy (scale) | Hi-res artwork; `next/image` with a custom loader |
+| Data | **Neon (serverless Postgres)** | System of record — catalogue, enquiries, sell submissions. `@neondatabase/serverless` HTTP driver via `lib/db.ts` |
+| Auth | **Neon Auth (Managed Better Auth)** | `/admin/*` sign-in. Called directly over its REST API in `lib/auth/server.ts` — the `@neondatabase/auth` SDK requires Next.js 16+, and this app is on 14 |
+| Media | **Neon Postgres (`images` table, bytea)** | Hi-res artwork stored as raw bytes in the same database as everything else — no separate object-storage service. Uploaded via `app/api/media/upload`, served via `app/api/images/[id]`, through `next/image`'s built-in optimizer |
 | Payments | Stripe (intl) + Paystack/Flutterwave (NG) + Tap/MyFatoorah (GCC) | Behind a single `PaymentProvider` seam |
 | Email | Resend | Enquiry, purchase, sell-submission notifications |
 | Search | Postgres FTS + `pg_trgm` (launch) → Meilisearch/Typesense (scale) | Title, artist, movement, medium |
@@ -203,13 +204,15 @@ Taxonomy is the backbone. Model it before building UI.
 | **SellSubmission** | Artist-submitted work to list | artist name/email, title, movement, medium, dimensions, asking price, images[], status(pending\|accepted\|declined) |
 | **Post** | Blog / journal / archive writing | title, slug, cover, body(mdx/portable text), published_at, tags[] |
 
-`Artwork.images[]` shape: `{ path, alt, isPrimary, width, height }` (`path` references
-Supabase Storage; keep `width/height` to prevent layout shift). One `isPrimary: true`.
+`Artwork.images[]` shape: `{ path, alt, isPrimary, width, height }` (`path` is
+`/api/images/{id}`, this app's own serving route; keep `width/height` to prevent layout
+shift). One `isPrimary: true`.
 
 Use Postgres: `bigint` for money; `jsonb` for artist links and flexible metadata;
-`text[]` + a `pg_trgm` GIN index across title/artist/materials for fuzzy search.
-RLS: public read of published artworks/artists/movements/posts; writes restricted to
-`admin`; `SellSubmission`/`Enquiry` insert-only for the public, read for `admin`.
+`pg_trgm` GIN index on `artworks.title` for fuzzy search. Access control lives in the
+app layer, not RLS: public pages only ever call the read functions in `lib/data.ts`;
+writes go through `/admin/*` server actions gated by `requireAdmin()`
+(`lib/admin-auth.ts`), which checks the signed-in Neon Auth user's `role = 'admin'`.
 
 ### Movement seed ("Art Classes")
 
@@ -234,29 +237,15 @@ into full essays on each movement page.
 
 ---
 
-## Media pipeline (Supabase Storage → next/image)
+## Media pipeline (Neon Postgres → next/image)
 
 The site lives or dies on image quality. Fine art must render crisp, colour-true and fast.
 
-- **Upload:** admin/sell forms upload straight to a Storage bucket; persist `path` + `width`/`height` on the Artwork. Never proxy large files through a route handler.
-- **Deliver:** a custom `next/image` loader hits Supabase's render/transform endpoint for width-appropriate, `webp`/`avif` variants. `priority` only on the hero/LCP work; everything below the fold lazy-loads.
+- **Upload:** `ImageUploadField` sends the raw file to `app/api/media/upload`, which checks the admin session, then inserts the bytes into the `images` table (`id uuid`, `data bytea`, `content_type`, `width`, `height`) via `lib/db.ts`'s `sql`. File bytes pass through our own server (no signed client-token handoff to a third party).
+- **Deliver:** the upload route returns the new row's `id`; `Artwork.images[].path` and `Movement.heroImage` store `/api/images/{id}` — a route on this same app, not an absolute external URL. `app/api/images/[id]/route.ts` streams the bytes back with an immutable long-lived `Cache-Control` header (rows are never updated in place — a re-upload creates a new row/id). No `images.remotePatterns` needed in `next.config.mjs` since these are same-origin; Next's built-in Image Optimization API still handles `webp`/`avif` variants on top. `priority` only on the hero/LCP work; everything below the fold lazy-loads.
 - **Colour fidelity:** never JPEG-crush originals; keep quality high on detail/zoom views — collectors judge on colour and surface. Preserve aspect ratio; no forced crops on the detail page (crops are fine for grid thumbs).
-- **Zoom:** pinch/scroll zoom on the detail page (`react-medium-image-zoom` or a lightbox) so buyers can inspect brushwork.
-- **Scale path:** move transforms to Cloudinary/imgproxy if Storage rendering becomes a bottleneck — behind the same loader seam, so components don't change.
-
-```ts
-// lib/image-loader.ts — Supabase render endpoint via next/image
-export default function supabaseLoader({ src, width, quality }: {
-  src: string; width: number; quality?: number;
-}) {
-  const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  return `${base}/storage/v1/render/image/public/${src}?width=${width}&quality=${quality || 78}&resize=contain`;
-}
-```
-```ts
-// next.config.ts
-images: { loader: "custom", loaderFile: "./lib/image-loader.ts" }
-```
+- **Zoom:** pinch/scroll zoom on the detail page (`react-medium-image-zoom` or a lightbox) so buyers can inspect brushwork — not yet built.
+- **Trade-off, deliberate:** storing bytes in Postgres means every image byte is served from this app's single Neon region rather than a CDN edge, and the database grows with every upload. Chosen over Vercel Blob specifically to keep the whole stack on one connection string — no second service with its own token/env-var to misconfigure. Move to Cloudinary/imgproxy/S3 behind the same "store a path, serve via a route" convention if this ever becomes a bottleneck.
 
 ---
 
@@ -307,7 +296,7 @@ export function FeaturedCanvas({ work }: { work: Artwork }) {
 /sell                          Submit artwork to sell (reuses media pipeline)
 /blog  /blog/[slug]            Journal
 /about  /contact
-/admin/*                       Supabase-auth-gated: artwork/artist/movement CRUD, media, enquiries, submissions
+/admin/*                       Neon Auth-gated (role=admin): artwork/artist/movement CRUD, media, enquiries, submissions
 ```
 
 ## Folder structure
@@ -316,23 +305,24 @@ export function FeaturedCanvas({ work }: { work: Artwork }) {
 app/
 ├── (site)/            layout, page (exhibition), gallery, artworks, movements, artists,
 │                      exhibitions, archive, sell, blog, about, contact, loading.tsx, error.tsx
-├── admin/             artworks, artists, movements, enquiries, submissions  (RLS-gated)
-└── api/               enquiry, sell-submit, checkout, revalidate
+├── admin/             login (Neon Auth sign-in), (protected)/ — artworks, artists, movements, mediums, enquiries, submissions
+└── api/               auth is called directly from server code (no proxy route — see lib/auth/server.ts); media/upload, images/[id], enquiry, sell-submit, checkout, revalidate
 components/
-├── ui/                shadcn primitives
-├── common/            Header, Footer, Search, CustomCursor, Grain
+├── ui/                shadcn primitives + Button/LinkButton (buttonClass) — the one CTA style, never inline the border-gilt classes again
+├── admin/             AdminNav, ArtworkForm, ArtistForm, MovementForm, MediumForm, ImageUploadField (Neon `images` table), DeleteButton, StatusSelect
+├── common/            Header (active link + mobile drawer), Footer, EmptyState, RouteError, Search, CustomCursor, Grain
 ├── art/               ArtworkCard, Placard, Gallery, Zoom, FacetRail, StatusChip
 ├── exhibition/        FeaturedCanvas, PaintingScene, ExhibitionScroll
-└── motion/            Reveal, TextReveal, LenisProvider
-lib/                   supabase.ts, image-loader.ts, fonts.ts, money.ts, search.ts, payments.ts, utils.ts (cn)
-types/                 index.ts (Artwork, Artist, Movement, Exhibition, Enquiry…) + supabase-generated types
+└── motion/            Reveal, TextReveal, LenisProvider, Stagger (StaggerGroup/StaggerItem — grid/list reveal)
+lib/                   db.ts (Neon client), data.ts (all reads + enquiry/submission writes), auth/server.ts (Neon Auth REST client), admin-auth.ts (requireAdmin), fonts.ts, money.ts, search.ts, payments.ts, utils.ts (cn, slugify, fieldClass, fieldLabelClass)
+types/                 index.ts (Artwork, Artist, Movement, Exhibition, Enquiry…)
 ```
 
 ---
 
 ## Key flows
 
-- **Buy / enquire:** priced works → checkout via `PaymentProvider` (Stripe/Paystack/Tap by region). POA works → enquiry form (Supabase insert + Resend). Prefill artwork ref; on sale, flip status → `reserved`/`sold`.
+- **Buy / enquire:** priced works → checkout via `PaymentProvider` (Stripe/Paystack/Tap by region). POA works → enquiry form (Neon insert + Resend). Prefill artwork ref; on sale, flip status → `reserved`/`sold`.
 - **Sell artwork:** public `SellSubmission` form (title, movement, medium, dimensions, asking price, images) → Storage upload + insert + Resend to admin. Admin accepts → becomes an Artwork.
 - **Archive:** sold works stay live, marked `sold`, and flow into `/archive` — provenance + a trust signal, never deleted (append-only spirit).
 - **Movement page:** essay (`lede` + body) + a curated, filterable grid of works in that movement — this is the "class."
@@ -344,7 +334,10 @@ types/                 index.ts (Artwork, Artist, Movement, Exhibition, Enquiry�
 - Server Components by default; `"use client"` only for state/effects/handlers/Motion/GSAP/R3F, pushed as low as possible.
 - `cn()` (clsx + tailwind-merge) for all className merges; no inline styles except Motion `style`.
 - Money through `lib/money.ts` (parse, add, format by currency exponent) — never raw arithmetic on prices in components.
-- Every data route gets `loading.tsx`; every route group gets `error.tsx`.
+- Every data route gets `loading.tsx`; every route group gets `error.tsx` (rendering shared `components/common/RouteError.tsx` with a route-specific message — never re-inline the markup).
+- Every CTA is `Button`/`LinkButton` from `components/ui/button.tsx` (or `buttonClass()` for a non-`<button>`/`<Link>` element like a `mailto:` anchor) — never inline the border-gilt hover classes again. Every form field uses `lib/utils.ts`'s `fieldClass`/`fieldLabelClass`.
+- Every page header (h1 + lede) wraps in `<Reveal>`; every card grid or list wraps in `<StaggerGroup>`/`<StaggerItem>` (`components/motion/Stagger.tsx`) so results reveal in a gentle stagger, not a hard pop-in.
+- Every "no results" case renders `components/common/EmptyState.tsx` (heading + explanation + optional action) — never a bare line of text.
 - `generateMetadata()` on every public page; per-artwork OG images + sitemap for SEO. Art is shared on social — OG images matter.
 - Accessibility floor: visible keyboard focus, `useReducedMotion()` honoured, Radix a11y, alt text required on every artwork image, custom cursor never traps interaction.
 - Performance floor: 60fps target; lazy-load 3D and below-fold media; GPU-friendly transforms only (`transform`/`opacity`, never animate layout); Lighthouse CI in the pipeline.
@@ -354,10 +347,10 @@ types/                 index.ts (Artwork, Artist, Movement, Exhibition, Enquiry�
 ## Build order
 
 1. Repo + Next.js + Tailwind + fonts + tokens + Lenis provider + Grain; GitHub Actions + Vercel from commit one.
-2. Supabase schema + movement seed (13) + generated types + RLS.
+2. Neon schema + movement seed (13) + typed data-access layer (`lib/data.ts`).
 3. Media pipeline (Storage + `next/image` loader) wired end-to-end before listing UI.
 4. `Placard` + `ArtworkCard` + gallery list/detail + facet search (Postgres FTS).
 5. Movement pages (essays + curated grids) — the "classes."
 6. Cinematic exhibition home (Lenis + GSAP), then the optional 3D featured hero + shader transition.
 7. Buy / enquire / sell flows (payments + Resend); artist profiles; archive.
-8. Admin CRUD + auth (Supabase RLS). Polish: OG images, sitemap, Lighthouse CI, analytics.
+8. Admin CRUD + auth (Neon Auth, `requireAdmin`). Polish: OG images, sitemap, Lighthouse CI, analytics.

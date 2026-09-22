@@ -3,8 +3,13 @@ import type { Metadata } from "next";
 import { ArtworkCard } from "@/components/art/ArtworkCard";
 import { FacetRail } from "@/components/art/FacetRail";
 import { SortSelect } from "@/components/art/SortSelect";
-import { listArtworks, type ArtworkFilters } from "@/lib/data";
-import { MOVEMENTS_WITH_COUNTS } from "@/lib/mock-data";
+import { EmptyState } from "@/components/common/EmptyState";
+import { Reveal } from "@/components/motion/Reveal";
+import { StaggerGroup, StaggerItem } from "@/components/motion/Stagger";
+import { LinkButton } from "@/components/ui/button";
+import { listArtworks, listMovementsWithCounts, type ArtworkFilters } from "@/lib/data";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Gallery",
@@ -16,23 +21,28 @@ export default async function GalleryPage({
 }: {
   searchParams: { movement?: string; status?: ArtworkFilters["status"]; sort?: ArtworkFilters["sort"] };
 }) {
-  const artworks = await listArtworks({
-    movement: searchParams.movement,
-    status: searchParams.status,
-    sort: searchParams.sort,
-  });
+  const [artworks, movements] = await Promise.all([
+    listArtworks({
+      movement: searchParams.movement,
+      status: searchParams.status,
+      sort: searchParams.sort,
+    }),
+    listMovementsWithCounts(),
+  ]);
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-16">
-      <h1 className="font-display text-display-lg italic text-gesso">Gallery</h1>
-      <p className="mt-3 max-w-xl font-body text-lede text-ash">
-        Original works, available to buy or enquire on. Filter by movement or availability.
-      </p>
+      <Reveal>
+        <h1 className="font-display text-display-lg italic text-gesso">Gallery</h1>
+        <p className="mt-3 max-w-xl font-body text-lede text-ash">
+          Original works, available to buy or enquire on. Filter by movement or availability.
+        </p>
+      </Reveal>
 
       <div className="mt-12 grid grid-cols-1 gap-12 md:grid-cols-[220px_1fr]">
         <aside>
           <Suspense fallback={null}>
-            <FacetRail movements={MOVEMENTS_WITH_COUNTS} />
+            <FacetRail movements={movements} />
           </Suspense>
         </aside>
 
@@ -47,13 +57,17 @@ export default async function GalleryPage({
           </div>
 
           {artworks.length === 0 ? (
-            <p className="font-body text-ash">No works match these filters.</p>
+            <EmptyState heading="No works match these filters" action={<LinkButton href="/gallery">Clear filters</LinkButton>}>
+              Try a different movement or availability, or clear your filters to see the whole collection.
+            </EmptyState>
           ) : (
-            <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+            <StaggerGroup className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
               {artworks.map((artwork) => (
-                <ArtworkCard key={artwork.id} artwork={artwork} />
+                <StaggerItem key={artwork.id}>
+                  <ArtworkCard artwork={artwork} />
+                </StaggerItem>
               ))}
-            </div>
+            </StaggerGroup>
           )}
         </div>
       </div>

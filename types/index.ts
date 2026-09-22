@@ -68,6 +68,19 @@ export type EnquiryInput = {
   offer?: number;
 };
 
+export type SiteImage = {
+  path: string;
+  alt: string;
+  width: number;
+  height: number;
+};
+
+export type ContactMessageInput = {
+  name: string;
+  email: string;
+  message: string;
+};
+
 export type SellSubmissionInput = {
   artistName: string;
   artistEmail: string;
