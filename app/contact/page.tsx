@@ -32,7 +32,14 @@ export default function ContactPage() {
           <div className="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2">
             {REPRESENTATIVES.map((rep) => (
               <div key={rep.region}>
-                <p className="font-body text-label uppercase tracking-[0.18em] text-gilt">{rep.region}</p>
+                <p className="font-body text-label uppercase tracking-[0.18em] text-gilt">
+                  {rep.region}
+                  {rep.main && (
+                    <span className="ml-2 text-ash">
+                      · Main office
+                    </span>
+                  )}
+                </p>
                 {rep.name && <p className="mt-2 font-display text-lg italic text-gesso">{rep.name}</p>}
                 {rep.phone && (
                   <a href={`tel:${rep.phone}`} className="mt-1 block font-body text-sm text-ash hover:text-gesso">
@@ -49,7 +56,7 @@ export default function ContactPage() {
 }
 
 const REPRESENTATIVES = [
-  { region: "The Netherlands & Europe", name: "Fabian", phone: "+31 6 13723963" },
-  { region: "UK & Ireland", name: "Gerald", phone: "+447916157480" },
-  { region: "Nigeria", name: null, phone: "0811 399 6181" },
+  { region: "Lagos, Nigeria", name: null, phone: "0811 399 6181", main: true },
+  { region: "The Netherlands & Europe", name: "Fabian", phone: "+31 6 13723963", main: false },
+  { region: "UK & Ireland", name: "Gerald", phone: "+447916157480", main: false },
 ];
