@@ -98,7 +98,6 @@ export function HeroSection({ works }: { works: Artwork[] }) {
               className="object-cover"
             />
           </motion.div>
-          <div className="absolute inset-0 bg-ink/75" />
         </motion.div>
       </AnimatePresence>
 
