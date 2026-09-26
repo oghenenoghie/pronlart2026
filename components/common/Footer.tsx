@@ -14,6 +14,14 @@ export function Footer() {
           <Link href="/contact" className="font-body text-label uppercase tracking-[0.18em] text-ash hover:text-gesso">
             Contact
           </Link>
+          <a
+            href="https://www.facebook.com/share/1HqvMCmgA4/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-body text-label uppercase tracking-[0.18em] text-ash hover:text-gesso"
+          >
+            Facebook
+          </a>
         </nav>
       </div>
     </footer>
