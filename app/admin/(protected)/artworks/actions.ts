@@ -90,6 +90,16 @@ export async function updateArtwork(id: string, formData: FormData) {
   redirect("/admin/artworks");
 }
 
+export async function updateArtworkStatus(id: string, slug: string, formData: FormData) {
+  const status = String(formData.get("status") ?? "available") as ArtworkStatus;
+  await sql`update artworks set status = ${status} where id = ${id}`;
+
+  revalidatePath("/admin/artworks");
+  revalidatePath("/gallery");
+  revalidatePath("/archive");
+  revalidatePath(`/artworks/${slug}`);
+}
+
 export async function deleteArtwork(id: string) {
   await sql`delete from artworks where id = ${id}`;
 
