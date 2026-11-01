@@ -4,10 +4,12 @@ export function StatusSelect<T extends string>({
   action,
   current,
   options,
+  labels,
 }: {
   action: (formData: FormData) => void | Promise<void>;
   current: T;
   options: readonly T[];
+  labels?: Partial<Record<T, string>>;
 }) {
   return (
     <form action={action}>
@@ -19,7 +21,7 @@ export function StatusSelect<T extends string>({
       >
         {options.map((opt) => (
           <option key={opt} value={opt}>
-            {opt}
+            {labels?.[opt] ?? opt}
           </option>
         ))}
       </select>

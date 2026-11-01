@@ -9,6 +9,11 @@ import type { ArtworkStatus } from "@/types";
 import { deleteArtwork, updateArtworkStatus } from "./actions";
 
 const STATUSES = ["available", "reserved", "sold"] as const;
+const STATUS_LABELS: Record<(typeof STATUSES)[number], string> = {
+  available: "Available",
+  reserved: "Reserved",
+  sold: "Sold (Archive)",
+};
 
 const FILTERS: { label: string; status?: ArtworkStatus }[] = [
   { label: "All" },
@@ -86,6 +91,7 @@ export default async function AdminArtworksPage({
                   <StatusSelect
                     current={artwork.status}
                     options={STATUSES}
+                    labels={STATUS_LABELS}
                     action={updateArtworkStatus.bind(null, artwork.id, artwork.slug)}
                   />
                 </td>
