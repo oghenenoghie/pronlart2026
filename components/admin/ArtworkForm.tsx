@@ -7,6 +7,11 @@ import { toMajorUnitsString } from "@/lib/money";
 import type { Artist, Artwork, ArtworkStatus, Medium, Movement } from "@/types";
 
 const STATUSES: ArtworkStatus[] = ["available", "reserved", "sold"];
+const STATUS_LABELS: Record<ArtworkStatus, string> = {
+  available: "Available",
+  reserved: "Reserved",
+  sold: "Sold (Archive)",
+};
 
 export function ArtworkForm({
   action,
@@ -174,7 +179,7 @@ export function ArtworkForm({
           <select id="status" name="status" defaultValue={artwork?.status ?? "available"} required className={fieldInput}>
             {STATUSES.map((s) => (
               <option key={s} value={s}>
-                {s}
+                {STATUS_LABELS[s]}
               </option>
             ))}
           </select>

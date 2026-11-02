@@ -1,12 +1,16 @@
 import Link from "next/link";
+import { Logo } from "@/components/common/Logo";
 
 export function Footer() {
   return (
     <footer className="border-t border-line">
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-6 py-10 text-center sm:flex-row sm:justify-between sm:text-left">
-        <p className="font-body text-placard text-ash">
-          © {new Date().getFullYear()} B-Edge Artworks. All works reserved to their artists.
-        </p>
+        <div className="flex items-center gap-3">
+          <Logo className="h-7 w-7 shrink-0" />
+          <p className="font-body text-placard text-ash">
+            © {new Date().getFullYear()} B-Edge Artworks. All works reserved to their artists.
+          </p>
+        </div>
         <nav className="flex items-center gap-6">
           <Link href="/about" className="font-body text-label uppercase tracking-[0.18em] text-ash hover:text-gesso">
             About

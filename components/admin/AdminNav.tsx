@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
@@ -19,11 +19,15 @@ const NAV_ITEMS = [
 
 export function AdminNav() {
   const pathname = usePathname();
+  const status = useSearchParams().get("status");
 
   return (
     <nav className="mt-8 space-y-1">
       {NAV_ITEMS.map((item) => {
-        const active = item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
+        const [itemPath, itemQuery] = item.href.split("?");
+        const itemStatus = itemQuery ? new URLSearchParams(itemQuery).get("status") : null;
+        const active =
+          itemPath === "/admin" ? pathname === "/admin" : pathname.startsWith(itemPath) && status === itemStatus;
         return (
           <Link
             key={item.href}

@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { Logo } from "@/components/common/Logo";
 
 const NAV = [
   { href: "/gallery", label: "Gallery" },
@@ -24,15 +24,9 @@ export function Header() {
   return (
     <header className="relative border-b border-line">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-        <Link href="/" className="flex items-center">
-          <Image
-            src="/logo-light.png"
-            alt="B-Edge Artworks"
-            width={1523}
-            height={301}
-            priority
-            className="h-8 w-auto sm:h-9"
-          />
+        <Link href="/" className="flex items-center gap-3">
+          <Logo className="h-9 w-9 shrink-0" />
+          <span className="font-display text-lg italic text-gesso">B-Edge Artworks</span>
         </Link>
 
         <nav className="hidden items-center gap-6 md:flex">

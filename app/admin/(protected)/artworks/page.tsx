@@ -3,9 +3,17 @@ import { listArtworks } from "@/lib/data";
 import { formatPrice } from "@/lib/money";
 import { cn } from "@/lib/utils";
 import { DeleteButton } from "@/components/admin/DeleteButton";
+import { StatusSelect } from "@/components/admin/StatusSelect";
 import { submitButton } from "@/components/admin/form-styles";
 import type { ArtworkStatus } from "@/types";
-import { deleteArtwork } from "./actions";
+import { deleteArtwork, updateArtworkStatus } from "./actions";
+
+const STATUSES = ["available", "reserved", "sold"] as const;
+const STATUS_LABELS: Record<(typeof STATUSES)[number], string> = {
+  available: "Available",
+  reserved: "Reserved",
+  sold: "Sold (Archive)",
+};
 
 const FILTERS: { label: string; status?: ArtworkStatus }[] = [
   { label: "All" },
@@ -79,7 +87,14 @@ export default async function AdminArtworksPage({
                 <td className="py-3 pr-4">{artwork.title}</td>
                 <td className="py-3 pr-4 text-ash">{artwork.artist.name}</td>
                 <td className="py-3 pr-4 text-ash">{artwork.movement.name}</td>
-                <td className="py-3 pr-4 text-ash">{artwork.status}</td>
+                <td className="py-3 pr-4">
+                  <StatusSelect
+                    current={artwork.status}
+                    options={STATUSES}
+                    labels={STATUS_LABELS}
+                    action={updateArtworkStatus.bind(null, artwork.id, artwork.slug)}
+                  />
+                </td>
                 <td className="py-3 pr-4 tabular-nums text-ash">{formatPrice(artwork.price, artwork.currency)}</td>
                 <td className="py-3 pr-4 text-ash">{artwork.featured ? "Yes" : ""}</td>
                 <td className="py-3">
