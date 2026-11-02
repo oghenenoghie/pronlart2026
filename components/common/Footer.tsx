@@ -7,9 +7,22 @@ export function Footer() {
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-6 py-10 text-center sm:flex-row sm:justify-between sm:text-left">
         <div className="flex items-center gap-3">
           <Logo className="h-7 w-7 shrink-0" />
-          <p className="font-body text-placard text-ash">
-            © {new Date().getFullYear()} B-Edge Artworks. All works reserved to their artists.
-          </p>
+          <div>
+            <p className="font-body text-placard text-ash">
+              © {new Date().getFullYear()} B-Edge Artworks. All works reserved to their artists.
+            </p>
+            <p className="mt-1 font-body text-placard text-ash">
+              A property of{" "}
+              <a
+                href="https://www.shipcovetrading.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-gesso hover:underline"
+              >
+                Shipcove Trading
+              </a>
+            </p>
+          </div>
         </div>
         <nav className="flex items-center gap-6">
           <Link href="/about" className="font-body text-label uppercase tracking-[0.18em] text-ash hover:text-gesso">
