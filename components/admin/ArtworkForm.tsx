@@ -187,7 +187,7 @@ export function ArtworkForm({
       </div>
 
       <label className="flex items-center gap-2 font-body text-sm text-ash">
-        <input type="checkbox" name="featured" defaultChecked={artwork?.featured} />
+        <input type="checkbox" name="featured" defaultChecked={artwork ? artwork.featured : true} />
         Featured on the home page exhibition
       </label>
 
