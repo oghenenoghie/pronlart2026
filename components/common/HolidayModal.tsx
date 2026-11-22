@@ -89,7 +89,7 @@ export function HolidayModal() {
               <span className="text-4xl font-light text-[#d9b36f]">B</span>
               <span className="text-left text-sm font-medium uppercase leading-tight tracking-[0.24em] text-[#f4eee2]">B-EDGE<br /><span className="text-[9px] tracking-[0.48em] text-[#d9b36f]">ARTWORKS</span></span>
             </div>
-            <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.34em] text-[#d9b36f]">Season's greetings</p>
+            <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.34em] text-[#d9b36f]">Season&rsquo;s greetings</p>
             <h2 id="holiday-modal-title" className="font-display text-4xl leading-[1.08] text-[#f7f1e8] sm:text-5xl">
               Merry Christmas
               <span className="mt-2 block text-[#e4bd77]">&amp; Happy New Year 2027</span>
