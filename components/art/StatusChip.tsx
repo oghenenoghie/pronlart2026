@@ -8,19 +8,14 @@ const STATUS_LABEL: Record<ArtworkStatus, string> = {
 };
 
 const STATUS_DOT: Record<ArtworkStatus, string> = {
-  available: "bg-emerald-500",
-  reserved: "bg-amber-500",
-  sold: "bg-ash",
+  available: "bg-emerald-600",
+  reserved: "bg-amber-600",
+  sold: "bg-ink/35",
 };
 
 export function StatusChip({ status, className }: { status: ArtworkStatus; className?: string }) {
   return (
-    <span
-      className={cn(
-        "inline-flex items-center gap-1.5 font-body text-label uppercase tracking-[0.18em] text-ash",
-        className
-      )}
-    >
+    <span className={cn("inline-flex items-center gap-1.5 font-body text-[0.62rem] uppercase tracking-[0.14em] text-ink/55", className)}>
       <span className={cn("h-1.5 w-1.5 rounded-full", STATUS_DOT[status])} aria-hidden />
       {STATUS_LABEL[status]}
     </span>
