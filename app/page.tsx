@@ -1,69 +1,94 @@
-import Link from "next/link";
-import { Reveal } from "@/components/motion/Reveal";
 import { HeroSection } from "@/components/home/HeroSection";
-import { ExhibitionSpotlight } from "@/components/home/ExhibitionSpotlight";
+import { SelectedWorks } from "@/components/home/SelectedWorks";
+import { ArtistsTeaser } from "@/components/home/ArtistsTeaser";
 import { SellCallout } from "@/components/home/SellCallout";
 import { MovementsTeaser } from "@/components/common/MovementsTeaser";
-import { getSellCalloutImage, listArtworks, listMovementsWithCounts } from "@/lib/data";
+import { listArtworks, listMovementsWithCounts, getSellCalloutImage } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
-const EXHIBITION_SIZE = 6;
-
 export default async function Home() {
-  const [featured, movements, sellCalloutImage] = await Promise.all([
-    listArtworks({ featured: true, sort: "newest" }),
+  const [artworks, movements, configuredSellImage] = await Promise.all([
+    listArtworks({ sort: "newest" }),
     listMovementsWithCounts(),
     getSellCalloutImage(),
   ]);
 
-  // Never let the signature exhibition go empty just because nothing's been
-  // flagged featured yet — fall back to the latest available works.
-  const exhibitionWorks =
-    featured.length > 0
-      ? featured
-      : (await listArtworks({ status: "available", sort: "newest" })).slice(0, EXHIBITION_SIZE);
+  const heroWork =
+    artworks.find((work) => work.featured && work.status === "available") ??
+    artworks.find((work) => work.featured) ??
+    artworks.find((work) => work.status === "available") ??
+    artworks[0];
 
-  // The sell pitch image is admin-configurable (/admin/settings); fall back
-  // to a work from the current exhibition until one's been set.
-  const fallbackArtwork = exhibitionWorks[EXHIBITION_SIZE - 1];
-  const fallbackImage = fallbackArtwork?.images.find((img) => img.isPrimary) ?? fallbackArtwork?.images[0];
-  const sellImage = sellCalloutImage ?? fallbackImage;
+  const selectedWorks = artworks.filter((work) => work.id !== heroWork?.id).slice(0, 3);
+  const populatedMovements = movements.filter((movement) => movement.artworkCount > 0);
+
+  const artistMap = new Map<
+    string,
+    { artist: (typeof artworks)[number]["artist"]; artworkCount: number; artwork: (typeof artworks)[number] }
+  >();
+
+  for (const artwork of artworks) {
+    const current = artistMap.get(artwork.artist.id);
+    if (current) {
+      current.artworkCount += 1;
+    } else {
+      artistMap.set(artwork.artist.id, {
+        artist: artwork.artist,
+        artworkCount: 1,
+        artwork,
+      });
+    }
+  }
+
+  const artists = Array.from(artistMap.values())
+    .sort((a, b) => b.artworkCount - a.artworkCount)
+    .slice(0, 3);
+
+  const fallbackArtworkImage =
+    heroWork?.images.find((image) => image.isPrimary) ?? heroWork?.images[0];
+
+  const sellImage =
+    configuredSellImage ??
+    (fallbackArtworkImage
+      ? {
+          path: fallbackArtworkImage.path,
+          alt: fallbackArtworkImage.alt,
+          width: fallbackArtworkImage.width,
+          height: fallbackArtworkImage.height,
+        }
+      : undefined);
 
   return (
-    <main>
-      <HeroSection works={exhibitionWorks} />
-
+    <main className="bg-gesso text-ink">
+      <HeroSection work={heroWork} />
+      <SelectedWorks works={selectedWorks} />
+      <MovementsTeaser movements={populatedMovements} artworks={artworks} />
+      <ArtistsTeaser artists={artists} />
       <SellCallout image={sellImage} />
 
-      <ExhibitionSpotlight works={exhibitionWorks} />
-
-      <MovementsTeaser movements={movements} />
-
-      <Reveal>
-        <section className="mx-auto max-w-6xl border-t border-line px-6 py-16">
-          <div className="grid grid-cols-1 gap-10 text-center sm:grid-cols-3 sm:text-left">
-            <Link href="/gallery" className="group block">
-              <p className="font-display text-h3 italic text-gesso transition-colors group-hover:text-gilt">
-                Browse the gallery
-              </p>
-              <p className="mt-2 font-body text-sm text-ash">Every work, filterable by movement and availability.</p>
-            </Link>
-            <Link href="/artists" className="group block">
-              <p className="font-display text-h3 italic text-gesso transition-colors group-hover:text-gilt">
-                Meet the artists
-              </p>
-              <p className="mt-2 font-body text-sm text-ash">The makers behind the works in the gallery.</p>
-            </Link>
-            <Link href="/sell" className="group block">
-              <p className="font-display text-h3 italic text-gesso transition-colors group-hover:text-gilt">
-                Sell a work
-              </p>
-              <p className="mt-2 font-body text-sm text-ash">Submit an original for consideration.</p>
-            </Link>
+      <section className="border-t border-ink/10 bg-gesso px-6 py-16 sm:py-20">
+        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-8 md:flex-row md:items-end">
+          <div className="max-w-2xl">
+            <p className="font-body text-label uppercase tracking-[0.18em] text-ink/50">
+              The collection continues
+            </p>
+            <h2 className="mt-4 font-display text-display-lg font-medium text-ink">
+              Every work has a story.
+            </h2>
+            <p className="mt-4 max-w-xl font-body text-base leading-7 text-ink/65">
+              Revisit sold and past works in the archive, with their details preserved alongside
+              the artists and movements that shaped them.
+            </p>
           </div>
-        </section>
-      </Reveal>
+          <a
+            href="/archive"
+            className="inline-flex min-h-12 items-center border-b border-ink/40 pb-2 font-body text-label uppercase tracking-[0.16em] text-ink transition-colors hover:border-gilt hover:text-ink/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gilt focus-visible:ring-offset-4 focus-visible:ring-offset-gesso"
+          >
+            Explore the archive <span aria-hidden className="ml-3 text-lg">↗</span>
+          </a>
+        </div>
+      </section>
     </main>
   );
 }
