@@ -39,7 +39,7 @@ export default function ContactPage() {
                   <div key={rep.region}>
                     <p className="font-body text-[0.65rem] uppercase tracking-[0.16em] text-ink/45">{rep.region}{rep.main ? " · Main office" : ""}</p>
                     {rep.name && <p className="mt-1 font-display text-lg italic text-ink">{rep.name}</p>}
-                    <a href={"tel:" + rep.phone.replace(/[^d+]/g, "")} className="mt-1 inline-block font-body text-sm text-ink/65 hover:text-ink">{rep.phone}</a>
+                    <a href={"tel:" + rep.phone.replace(/[^0-9+]/g, "")} className="mt-1 inline-block font-body text-sm text-ink/65 hover:text-ink">{rep.phone}</a>
                   </div>
                 ))}
               </div>
