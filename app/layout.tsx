@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
-import { playfair, inter, cormorant } from "@/lib/fonts";
+import { playfair, inter } from "@/lib/fonts";
 import { LenisProvider } from "@/components/motion/LenisProvider";
 import { Grain } from "@/components/common/Grain";
 import { Header } from "@/components/common/Header";
@@ -37,7 +37,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${playfair.variable} ${inter.variable} ${cormorant.variable}`}>
+    <html lang="en" className={`${playfair.variable} ${inter.variable}`}>
       <body className="flex min-h-screen flex-col bg-ink font-body text-gesso antialiased">
         <LenisProvider>
           <Header />
