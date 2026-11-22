@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const DISMISS_KEY = "b-edge-holiday-modal-dismissed-2027";
 
@@ -17,6 +17,15 @@ export function HolidayModal() {
     }
   }, []);
 
+  const closeModal = useCallback(() => {
+    try {
+      window.sessionStorage.setItem(DISMISS_KEY, "1");
+    } catch {
+      // The modal can still be closed when storage is unavailable.
+    }
+    setIsOpen(false);
+  }, []);
+
   useEffect(() => {
     if (!isOpen) return;
     const onKeyDown = (event: KeyboardEvent) => {
@@ -28,16 +37,7 @@ export function HolidayModal() {
       document.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = "";
     };
-  }, [isOpen]);
-
-  function closeModal() {
-    try {
-      window.sessionStorage.setItem(DISMISS_KEY, "1");
-    } catch {
-      // The modal can still be closed when storage is unavailable.
-    }
-    setIsOpen(false);
-  }
+  }, [isOpen, closeModal]);
 
   if (!isOpen) return null;
 
