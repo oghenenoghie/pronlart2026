@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Reveal } from "@/components/motion/Reveal";
-import { buttonClass } from "@/components/ui/button";
+import { PageIntro } from "@/components/common/PageIntro";
 import { ContactForm } from "@/components/forms/ContactForm";
 
 export const metadata: Metadata = {
@@ -10,48 +11,44 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="mx-auto max-w-3xl px-6 py-16">
-      <Reveal>
-        <h1 className="font-display text-display-lg italic text-gesso">Contact</h1>
-        <p className="mt-6 max-w-xl font-body text-lede text-ash">
-          For enquiries about a specific work, use the enquire button on its page — that reaches us
-          fastest. For everything else, write to us directly.
-        </p>
-        <a href="mailto:hello@b-edgeartworks.com" className={buttonClass("primary", "mt-8")}>
-          hello@b-edgeartworks.com
-        </a>
-      </Reveal>
+    <main className="min-h-screen bg-gesso text-ink">
+      <div className="mx-auto max-w-7xl px-6 py-14 sm:py-20 md:px-10">
+        <PageIntro
+          eyebrow="Start a conversation"
+          title="We'd like to hear from you."
+          description="Ask us about a work, the collection, artist submissions or working with B-Edge. For a specific artwork, you can also enquire directly from its page."
+          aside={<Link href="mailto:hello@b-edgeartworks.com" className="font-display text-lg italic text-ink underline decoration-ink/25 underline-offset-4 hover:decoration-gilt">hello@b-edgeartworks.com ↗</Link>}
+        />
 
-      <Reveal>
-        <ContactForm />
-      </Reveal>
+        <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(280px,0.7fr)] lg:gap-20">
+          <section>
+            <p className="font-body text-label uppercase tracking-[0.16em] text-ink/45">Send a message</p>
+            <h2 className="mt-3 font-display text-3xl italic text-ink">How can we help?</h2>
+            <ContactForm />
+          </section>
 
-      <Reveal>
-        <div className="mt-16 border-t border-line pt-12">
-          <h2 className="font-display text-h3 italic text-gesso">Regional representatives</h2>
-          <div className="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2">
-            {REPRESENTATIVES.map((rep) => (
-              <div key={rep.region}>
-                <p className="font-body text-label uppercase tracking-[0.18em] text-gilt">
-                  {rep.region}
-                  {rep.main && (
-                    <span className="ml-2 text-ash">
-                      · Main office
-                    </span>
-                  )}
-                </p>
-                {rep.name && <p className="mt-2 font-display text-lg italic text-gesso">{rep.name}</p>}
-                {rep.phone && (
-                  <a href={`tel:${rep.phone}`} className="mt-1 block font-body text-sm text-ash hover:text-gesso">
-                    {rep.phone}
-                  </a>
-                )}
+          <aside className="border-t border-ink/15 pt-7 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0">
+            <p className="font-body text-label uppercase tracking-[0.16em] text-ink/45">Reach the gallery</p>
+            <div className="mt-5">
+              <p className="font-display text-xl italic text-ink">General enquiries</p>
+              <a href="mailto:hello@b-edgeartworks.com" className="mt-2 block font-body text-sm text-ink/65 underline decoration-ink/25 underline-offset-4 hover:decoration-gilt">hello@b-edgeartworks.com</a>
+            </div>
+            <div className="mt-9 border-t border-ink/10 pt-7">
+              <h3 className="font-display text-2xl italic text-ink">Regional representatives</h3>
+              <div className="mt-6 space-y-6">
+                {REPRESENTATIVES.map((rep) => (
+                  <div key={rep.region}>
+                    <p className="font-body text-[0.65rem] uppercase tracking-[0.16em] text-ink/45">{rep.region}{rep.main ? " · Main office" : ""}</p>
+                    {rep.name && <p className="mt-1 font-display text-lg italic text-ink">{rep.name}</p>}
+                    <a href={"tel:" + rep.phone.replace(/[^d+]/g, "")} className="mt-1 inline-block font-body text-sm text-ink/65 hover:text-ink">{rep.phone}</a>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+          </aside>
         </div>
-      </Reveal>
-    </div>
+      </div>
+    </main>
   );
 }
 
