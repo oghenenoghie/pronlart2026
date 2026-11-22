@@ -1,17 +1,49 @@
 import Link from "next/link";
-import { ArtworkImage } from "@/components/art/ArtworkImage";
+import { WorksTabs, type WorksTab } from "@/components/home/WorksTabs";
 import { Reveal } from "@/components/motion/Reveal";
-import { formatPrice } from "@/lib/money";
 import type { Artwork } from "@/types";
 
-export function SelectedWorks({ works }: { works: Artwork[] }) {
+const PER_TAB = 3;
+
+/**
+ * Builds one tab for the whole collection plus one per medium, busiest medium
+ * first. The "All" tab leads with works that are not already in the hero
+ * slideshow, then falls back to them so it is never short.
+ */
+function buildTabs(works: Artwork[], heroIds: Set<string>): WorksTab[] {
+  const fresh = works.filter((work) => !heroIds.has(work.id));
+  const seen = works.filter((work) => heroIds.has(work.id));
+  const tabs: WorksTab[] = [
+    { key: "all", label: "All works", total: works.length, works: [...fresh, ...seen].slice(0, PER_TAB) },
+  ];
+
+  const byMedium = new Map<string, { label: string; works: Artwork[] }>();
+  for (const work of works) {
+    const group = byMedium.get(work.medium.slug);
+    if (group) group.works.push(work);
+    else byMedium.set(work.medium.slug, { label: work.medium.name, works: [work] });
+  }
+
+  if (byMedium.size > 1) {
+    const mediums = Array.from(byMedium.entries()).sort((a, b) => b[1].works.length - a[1].works.length);
+    for (const [slug, group] of mediums) {
+      tabs.push({ key: slug, label: group.label, total: group.works.length, works: group.works.slice(0, PER_TAB) });
+    }
+  }
+
+  return tabs;
+}
+
+export function SelectedWorks({ works, heroIds }: { works: Artwork[]; heroIds: Set<string> }) {
   if (works.length === 0) return null;
+
+  const tabs = buildTabs(works, heroIds);
 
   return (
     <section className="bg-white px-6 py-20 text-ink sm:py-28">
       <div className="mx-auto max-w-7xl">
         <Reveal>
-          <div className="flex flex-col justify-between gap-6 border-b border-ink/10 pb-8 sm:flex-row sm:items-end">
+          <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
             <div>
               <p className="font-body text-label uppercase tracking-[0.18em] text-ink/50">
                 02 / Selected works
@@ -21,53 +53,15 @@ export function SelectedWorks({ works }: { works: Artwork[] }) {
               </h2>
             </div>
             <p className="max-w-md font-body text-sm leading-7 text-ink/60">
-              A selection of original works from the B-Edge collection. Open a work to explore
-              its story, materials and details.
+              A selection of original works from the B-Edge collection. Choose a medium, then open
+              a work to explore its story, materials and details.
             </p>
           </div>
         </Reveal>
 
-        <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-          {works.map((work) => {
-            const availability =
-              work.status === "sold"
-                ? "In the archive"
-                : work.status === "reserved"
-                  ? "Reserved"
-                  : formatPrice(work.price, work.currency);
-
-            return (
-              <Reveal key={work.id}>
-                <Link
-                  href={"/artworks/" + work.slug}
-                  className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gilt focus-visible:ring-offset-4"
-                  aria-label={"View " + work.title + " by " + work.artist.name}
-                >
-                  <div className="overflow-hidden border border-ink/10 transition-colors duration-300 group-hover:border-gilt/60">
-                    <ArtworkImage artwork={work} className="w-full" />
-                  </div>
-                  <div className="mt-5 flex items-start justify-between gap-4">
-                    <div className="min-w-0">
-                      <p className="font-body text-label uppercase tracking-[0.16em] text-ink/50">
-                        {work.artist.name}
-                      </p>
-                      <h3 className="mt-2 font-display text-xl italic text-ink transition-colors group-hover:text-ink/65">
-                        {work.title}, {work.year}
-                      </h3>
-                      <p className="mt-2 font-body text-sm text-ink/60">
-                        {work.materials || work.medium.name}
-                      </p>
-                      <p className="mt-1 font-body text-sm text-ink/50">{work.dimensions}</p>
-                    </div>
-                    <span className="shrink-0 pt-1 font-body text-xs tabular-nums text-ink/65">
-                      {availability}
-                    </span>
-                  </div>
-                </Link>
-              </Reveal>
-            );
-          })}
-        </div>
+        <Reveal>
+          <WorksTabs tabs={tabs} />
+        </Reveal>
 
         <Reveal>
           <div className="mt-14 flex justify-center">

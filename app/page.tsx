@@ -15,13 +15,16 @@ export default async function Home() {
     getSellCalloutImage(),
   ]);
 
-  const heroWork =
-    artworks.find((work) => work.featured && work.status === "available") ??
-    artworks.find((work) => work.featured) ??
-    artworks.find((work) => work.status === "available") ??
-    artworks[0];
+  const withImages = artworks.filter((work) => work.images.length > 0);
+  const featured = withImages.filter((work) => work.featured);
+  const statusOrder = { available: 0, reserved: 1, sold: 2 } as const;
+  const heroWorks = (featured.length > 0 ? featured : withImages)
+    .slice()
+    .sort((a, b) => statusOrder[a.status] - statusOrder[b.status])
+    .slice(0, 5);
+  const heroWork = heroWorks[0] ?? artworks[0];
+  const heroIds = new Set(heroWorks.map((work) => work.id));
 
-  const selectedWorks = artworks.filter((work) => work.id !== heroWork?.id).slice(0, 3);
   const populatedMovements = movements.filter((movement) => movement.artworkCount > 0);
 
   const artistMap = new Map<
@@ -41,6 +44,12 @@ export default async function Home() {
       });
     }
   }
+
+  const stats = {
+    works: artworks.length,
+    artists: artistMap.size,
+    movements: movements.length,
+  };
 
   const artists = Array.from(artistMap.values())
     .sort((a, b) => b.artworkCount - a.artworkCount)
@@ -62,8 +71,8 @@ export default async function Home() {
 
   return (
     <main className="bg-gesso text-ink">
-      <HeroSection work={heroWork} />
-      <SelectedWorks works={selectedWorks} />
+      <HeroSection works={heroWorks} stats={stats} />
+      <SelectedWorks works={artworks} heroIds={heroIds} />
       <MovementsTeaser movements={populatedMovements} artworks={artworks} />
       <ArtistsTeaser artists={artists} />
       <SellCallout image={sellImage} />

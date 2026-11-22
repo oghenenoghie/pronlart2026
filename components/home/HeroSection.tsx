@@ -1,9 +1,23 @@
 import Link from "next/link";
-import { ArtworkImage } from "@/components/art/ArtworkImage";
+import { HeroSlides } from "@/components/home/HeroSlides";
+import { CountUp } from "@/components/motion/CountUp";
 import { Reveal } from "@/components/motion/Reveal";
 import type { Artwork } from "@/types";
 
-export function HeroSection({ work }: { work?: Artwork }) {
+export type HeroStats = {
+  works: number;
+  artists: number;
+  movements: number;
+};
+
+export function HeroSection({ works, stats }: { works: Artwork[]; stats: HeroStats }) {
+  const figures = [
+    { value: stats.works, label: "Original works" },
+    { value: stats.artists, label: "Artists" },
+    { value: stats.movements, label: "Art movements" },
+  ].filter((figure) => figure.value > 0);
+  const hasSlides = works.some((work) => work.images.length > 0);
+
   return (
     <section className="bg-gesso text-ink">
       <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 py-14 sm:py-20 md:min-h-[700px] md:grid-cols-[0.88fr_1.12fr] md:gap-16 md:px-10 lg:py-24">
@@ -37,57 +51,26 @@ export function HeroSection({ work }: { work?: Artwork }) {
               </Link>
             </div>
 
-            <div className="mt-14 grid max-w-lg grid-cols-3 gap-4 border-t border-ink/15 pt-5">
-              <div>
-                <p className="font-display text-2xl italic text-ink">01</p>
-                <p className="mt-1 font-body text-[0.65rem] uppercase leading-5 tracking-[0.12em] text-ink/55">
-                  Original art
-                </p>
-              </div>
-              <div>
-                <p className="font-display text-2xl italic text-ink">02</p>
-                <p className="mt-1 font-body text-[0.65rem] uppercase leading-5 tracking-[0.12em] text-ink/55">
-                  Artist stories
-                </p>
-              </div>
-              <div>
-                <p className="font-display text-2xl italic text-ink">13</p>
-                <p className="mt-1 font-body text-[0.65rem] uppercase leading-5 tracking-[0.12em] text-ink/55">
-                  Art movements
-                </p>
-              </div>
-            </div>
+            {figures.length > 0 && (
+              <dl className="mt-14 grid max-w-lg grid-cols-3 gap-4 border-t border-ink/15 pt-5">
+                {figures.map((figure) => (
+                  <div key={figure.label} className="flex flex-col-reverse">
+                    <dt className="mt-1 font-body text-[0.65rem] uppercase leading-5 tracking-[0.12em] text-ink/55">
+                      {figure.label}
+                    </dt>
+                    <dd className="font-display text-2xl italic text-ink">
+                      <CountUp value={figure.value} />
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            )}
           </div>
         </Reveal>
 
         <Reveal>
-          {work ? (
-            <div>
-              <Link
-                href={"/artworks/" + work.slug}
-                className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gilt focus-visible:ring-offset-4 focus-visible:ring-offset-gesso"
-                aria-label={"View " + work.title + " by " + work.artist.name}
-              >
-                <div className="overflow-hidden border border-ink/10 transition-colors duration-300 group-hover:border-gilt/60">
-                  <ArtworkImage artwork={work} priority className="w-full" />
-                </div>
-              </Link>
-
-              <div className="mt-5 flex flex-wrap items-start justify-between gap-4 border-b border-ink/15 pb-4">
-                <div>
-                  <p className="font-body text-label uppercase tracking-[0.16em] text-ink/50">
-                    Featured work
-                  </p>
-                  <p className="mt-2 font-display text-xl italic text-ink">
-                    {work.title}, {work.year}
-                  </p>
-                  <p className="mt-1 font-body text-sm text-ink/60">{work.artist.name}</p>
-                </div>
-                <p className="max-w-[13rem] text-right font-body text-sm leading-6 text-ink/55">
-                  {work.medium.name} <span aria-hidden>·</span> {work.dimensions}
-                </p>
-              </div>
-            </div>
+          {hasSlides ? (
+            <HeroSlides works={works} />
           ) : (
             <div className="flex min-h-[420px] items-end border border-ink/15 bg-white p-8 sm:min-h-[560px]">
               <div>
