@@ -18,7 +18,6 @@ const config: Config = {
       fontFamily: {
         display: ["var(--font-display)"],
         body: ["var(--font-body)"],
-        quiet: ["var(--font-quiet)"],
       },
       fontSize: {
         "display-xl": ["clamp(3rem, 8vw, 7rem)", { lineHeight: "1.05" }],
