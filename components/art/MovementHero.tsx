@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export function MovementHero({ path, alt }: { path: string; alt: string }) {
   return (
-    <div className="relative mb-12 aspect-[21/9] overflow-hidden border border-line">
+    <div className="relative mb-12 aspect-[21/9] overflow-hidden border border-ink/10 bg-white">
       <Image
         src={path}
         alt={alt}
