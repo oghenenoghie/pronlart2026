@@ -49,7 +49,7 @@ export default async function AdminDashboardPage() {
         </div>
         <Link
           href="/admin/artworks/new"
-          className="inline-flex min-h-11 w-fit items-center justify-center border border-ink bg-ink px-5 py-3 font-body text-[0.68rem] uppercase tracking-[0.17em] text-gesso transition-colors hover:border-gilt hover:bg-gilt hover:text-ink"
+          className="inline-flex min-h-11 w-fit items-center justify-center border border-ink bg-ink px-5 py-3 font-body text-[0.68rem] uppercase tracking-[0.17em] text-white transition-colors hover:border-gilt hover:bg-gilt hover:text-ink"
         >
           Add an artwork <span aria-hidden className="ml-3 text-gilt">↗</span>
         </Link>

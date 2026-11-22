@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireAdmin } from "@/lib/admin-auth";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { signOut } from "./actions";
@@ -12,7 +13,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="flex min-h-screen flex-col bg-gesso text-ink lg:flex-row">
       <aside className="z-20 w-full shrink-0 bg-ink text-gesso lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-[272px] lg:flex-col">
         <div className="flex items-center justify-between gap-4 px-5 pt-5 lg:block lg:px-7 lg:pt-8">
-          <a href="/admin" className="group flex min-h-12 items-center gap-3" aria-label="B-Edge studio dashboard">
+          <Link href="/admin" className="group flex min-h-12 items-center gap-3" aria-label="B-Edge studio dashboard">
             <span className="flex h-10 w-10 items-center justify-center border border-gilt/70 font-display text-xl italic text-gilt">
               B
             </span>
@@ -22,7 +23,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
                 Studio workspace
               </span>
             </span>
-          </a>
+          </Link>
           <p className="max-w-[45%] truncate text-right font-body text-xs text-ash lg:hidden">{admin.email}</p>
         </div>
 
