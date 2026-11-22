@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArtworkCard } from "@/components/art/ArtworkCard";
-import { ArtworkImage } from "@/components/art/ArtworkImage";
 import { EmptyState } from "@/components/common/EmptyState";
 import { Reveal } from "@/components/motion/Reveal";
 import { StaggerGroup, StaggerItem } from "@/components/motion/Stagger";
