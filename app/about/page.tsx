@@ -66,7 +66,7 @@ export default async function AboutPage() {
       <section className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-16 sm:py-20 md:flex-row md:items-end md:justify-between md:px-10">
         <div>
           <p className="font-body text-label uppercase tracking-[0.18em] text-ink/45">A collection that keeps its history</p>
-          <h2 className="mt-4 max-w-2xl font-display text-display-lg italic text-ink">The story doesn't end when a work leaves the gallery.</h2>
+          <h2 className="mt-4 max-w-2xl font-display text-display-lg italic text-ink">The story doesn&apos;t end when a work leaves the gallery.</h2>
         </div>
         <Link href="/archive" className="inline-flex min-h-11 items-center border-b border-ink/35 pb-2 font-body text-label uppercase tracking-[0.16em] text-ink hover:border-gilt">Visit the archive ↗</Link>
       </section>
