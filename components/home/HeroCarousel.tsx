@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ArtworkImage } from "@/components/art/ArtworkImage";
 import { Placard } from "@/components/art/Placard";
 import { useReducedMotion } from "@/components/motion/useReducedMotion";
@@ -64,7 +64,7 @@ function ArtworkModal({
 
   return (
     <div
-      className="fixed inset-0 z-[80] flex items-center justify-center bg-ink/95 p-3 backdrop-blur-sm sm:p-8"
+      className="fixed inset-0 z-[80] flex items-center justify-center bg-ink/95 p-3 sm:p-8"
       role="presentation"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
@@ -159,7 +159,7 @@ export function HeroCarousel({ works }: { works: Artwork[] }) {
     setModalStyle("Immersive");
     setIsOpen(true);
   };
-  const closeViewer = () => setIsOpen(false);
+  const closeViewer = useCallback(() => setIsOpen(false), []);
   const transition = reduceMotion ? "" : "transition-all duration-700 ease-out";
 
   return (
@@ -195,7 +195,7 @@ export function HeroCarousel({ works }: { works: Artwork[] }) {
             {activeStyle === 0 && (
               <div className="absolute inset-0">
                 <div className="absolute inset-0 scale-[1.02] opacity-80">{<ArtworkImage artwork={current} className="h-full w-full" />}</div>
-                <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/65 to-transparent" />
+                <div aria-hidden className="absolute inset-y-0 left-0 w-full bg-ink/85 sm:w-[62%]" />
                 <div className="absolute inset-0 flex items-end p-7 sm:p-12 lg:p-16">
                   <div className="max-w-xl">
                     <p className="font-body text-label uppercase tracking-[0.2em] text-gilt">01 / Cinematic hero</p>
