@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArtworkImage } from "@/components/art/ArtworkImage";
 import { Reveal } from "@/components/motion/Reveal";
