@@ -20,6 +20,9 @@ export function Header() {
 
   useEffect(() => setOpen(false), [pathname]);
 
+  // The private workspace has its own navigation and should not inherit public-site chrome.
+  if (pathname?.startsWith("/admin")) return null;
+
   return (
     <header className="sticky top-0 z-40 border-b border-ink/10 bg-gesso/95 text-ink backdrop-blur-sm">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-10">

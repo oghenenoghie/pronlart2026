@@ -16,7 +16,10 @@ export function DeleteButton({
         if (!window.confirm(confirmMessage)) e.preventDefault();
       }}
     >
-      <button type="submit" className="font-body text-sm text-red-400 transition-colors hover:text-red-300">
+      <button
+        type="submit"
+        className="font-body text-xs uppercase tracking-[0.12em] text-red-700 transition-colors hover:text-red-900"
+      >
         {label}
       </button>
     </form>

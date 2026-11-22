@@ -31,3 +31,134 @@ body {
     display: none;
   }
 }
+
+/* B-Edge studio workspace: a calm white-cube interface, separate from the public gallery. */
+.admin-theme {
+  min-width: 0;
+  color: #0b0a08;
+  background: #f4f1ea;
+}
+
+.admin-theme :where(.text-gesso) {
+  color: #0b0a08;
+}
+
+.admin-theme :where(.text-ash) {
+  color: rgba(11, 10, 8, 0.58);
+}
+
+.admin-theme :where(.border-line) {
+  border-color: rgba(11, 10, 8, 0.13);
+}
+
+.admin-theme :where(h1) {
+  color: #0b0a08;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.5vw, 2.8rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+}
+
+.admin-theme :where(h2, h3) {
+  color: #0b0a08;
+}
+
+.admin-theme :where(table) {
+  width: 100%;
+  border: 1px solid rgba(11, 10, 8, 0.12);
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #fff;
+  color: #0b0a08;
+}
+
+.admin-theme :where(thead tr) {
+  background: #eeebe4;
+}
+
+.admin-theme :where(th) {
+  padding: 15px 16px;
+  border-bottom: 1px solid rgba(11, 10, 8, 0.12);
+  color: rgba(11, 10, 8, 0.58);
+  font-size: 0.67rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.admin-theme :where(td) {
+  padding: 15px 16px;
+  border-bottom: 1px solid rgba(11, 10, 8, 0.08);
+  color: #0b0a08;
+  line-height: 1.5;
+  vertical-align: middle;
+}
+
+.admin-theme :where(tbody tr:last-child td) {
+  border-bottom: 0;
+}
+
+.admin-theme :where(tbody tr:hover) {
+  background: #faf9f6;
+}
+
+.admin-theme :where(input:not([type="checkbox"]):not([type="file"]), select, textarea) {
+  border-color: rgba(11, 10, 8, 0.17);
+  border-radius: 0;
+  background-color: #fff;
+  color: #0b0a08;
+}
+
+.admin-theme :where(input:not([type="checkbox"]):not([type="file"]), select, textarea):focus {
+  border-color: #b08d57;
+  outline: 2px solid rgba(176, 141, 87, 0.2);
+  outline-offset: 1px;
+}
+
+.admin-theme :where(input::placeholder, textarea::placeholder) {
+  color: rgba(11, 10, 8, 0.38);
+}
+
+.admin-theme :where(input[type="checkbox"]) {
+  accent-color: #8d6b3e;
+}
+
+.admin-theme :where(form.grid) {
+  max-width: 900px;
+  padding: clamp(20px, 3vw, 36px);
+  border: 1px solid rgba(11, 10, 8, 0.12);
+  background: #fff;
+}
+
+.admin-theme :where(.border-t) {
+  border-color: rgba(11, 10, 8, 0.12);
+}
+
+.admin-theme :where(.text-red-400) {
+  color: #a8322b;
+}
+
+.admin-theme :where(button, a) {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.admin-theme :where(a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible) {
+  outline: 2px solid #b08d57;
+  outline-offset: 3px;
+}
+
+.admin-theme input[type="file"]::file-selector-button {
+  margin-right: 12px;
+  border: 1px solid rgba(11, 10, 8, 0.18);
+  background: #f4f1ea;
+  padding: 8px 12px;
+  color: #0b0a08;
+  cursor: pointer;
+}
+
+.admin-theme input[type="file"]::file-selector-button:hover {
+  border-color: #b08d57;
+}
