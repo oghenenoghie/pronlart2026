@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Reveal } from "@/components/motion/Reveal";
 import { PageIntro } from "@/components/common/PageIntro";
 import { ContactForm } from "@/components/forms/ContactForm";
 
