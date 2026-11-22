@@ -4,6 +4,7 @@ import { LenisProvider } from "@/components/motion/LenisProvider";
 import { Grain } from "@/components/common/Grain";
 import { Header } from "@/components/common/Header";
 import { Footer } from "@/components/common/Footer";
+import { HolidayModal } from "@/components/common/HolidayModal";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -24,6 +25,7 @@ export default function RootLayout({
     <html lang="en" className={`${playfair.variable} ${inter.variable} ${cormorant.variable}`}>
       <body className="flex min-h-screen flex-col bg-ink font-body text-gesso antialiased">
         <LenisProvider>
+          <HolidayModal />
           <Header />
           <div className="flex-1">{children}</div>
           <Footer />
