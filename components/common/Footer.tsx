@@ -1,7 +1,15 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Logo } from "@/components/common/Logo";
 
 export function Footer() {
+  const pathname = usePathname();
+
+  // Keep the admin workspace focused; its navigation is managed by the admin shell.
+  if (pathname?.startsWith("/admin")) return null;
+
   return (
     <footer className="border-t border-ink/10 bg-gesso text-ink">
       <div className="mx-auto flex max-w-7xl flex-col gap-8 px-6 py-10 md:flex-row md:items-center md:justify-between md:px-10">
