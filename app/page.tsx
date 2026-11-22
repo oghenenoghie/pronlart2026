@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { HeroSection } from "@/components/home/HeroSection";
 import { SelectedWorks } from "@/components/home/SelectedWorks";
 import { ArtistsTeaser } from "@/components/home/ArtistsTeaser";
@@ -81,12 +82,12 @@ export default async function Home() {
               the artists and movements that shaped them.
             </p>
           </div>
-          <a
+          <Link
             href="/archive"
             className="inline-flex min-h-12 items-center border-b border-ink/40 pb-2 font-body text-label uppercase tracking-[0.16em] text-ink transition-colors hover:border-gilt hover:text-ink/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gilt focus-visible:ring-offset-4 focus-visible:ring-offset-gesso"
           >
             Explore the archive <span aria-hidden className="ml-3 text-lg">↗</span>
-          </a>
+          </Link>
         </div>
       </section>
     </main>
