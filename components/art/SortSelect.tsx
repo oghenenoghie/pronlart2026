@@ -16,24 +16,22 @@ export function SortSelect() {
   const active = searchParams.get("sort") ?? "newest";
 
   return (
-    <label className="flex items-center gap-2">
-      <span className="font-body text-label uppercase tracking-[0.18em] text-ash">Sort</span>
+    <label className="flex items-center gap-3">
+      <span className="font-body text-[0.65rem] uppercase tracking-[0.16em] text-ink/45">Sort by</span>
       <select
         value={active}
-        onChange={(e) => {
+        onChange={(event) => {
           const params = new URLSearchParams(searchParams.toString());
-          if (e.target.value === "newest") {
-            params.delete("sort");
-          } else {
-            params.set("sort", e.target.value);
-          }
-          router.push(`${pathname}?${params.toString()}`, { scroll: false });
+          if (event.target.value === "newest") params.delete("sort");
+          else params.set("sort", event.target.value);
+          const query = params.toString();
+          router.push(query ? pathname + "?" + query : pathname, { scroll: false });
         }}
-        className="border border-line bg-ink px-2 py-1 font-body text-sm text-gesso focus:border-gilt focus:outline-none"
+        className="min-h-10 border border-ink/15 bg-white px-3 font-body text-sm text-ink focus:border-gilt focus:outline-none focus:ring-1 focus:ring-gilt"
       >
-        {OPTIONS.map((opt) => (
-          <option key={opt.value} value={opt.value} className="bg-ink text-gesso">
-            {opt.label}
+        {OPTIONS.map((option) => (
+          <option key={option.value} value={option.value} className="bg-white text-ink">
+            {option.label}
           </option>
         ))}
       </select>
