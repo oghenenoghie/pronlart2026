@@ -153,15 +153,15 @@ export function HeroCarousel({ works }: { works: Artwork[] }) {
   const previous = works[(activeWork - 1 + works.length) % works.length] ?? current;
   const next = works[(activeWork + 1) % works.length] ?? current;
 
+  const closeViewer = useCallback(() => setIsOpen(false), []);
+  const transition = reduceMotion ? "" : "transition-all duration-700 ease-out";
+
   if (!current) return null;
 
   const openViewer = () => {
     setModalStyle("Immersive");
     setIsOpen(true);
   };
-  const closeViewer = useCallback(() => setIsOpen(false), []);
-  const transition = reduceMotion ? "" : "transition-all duration-700 ease-out";
-
   return (
     <>
       <section className="relative overflow-hidden border-b border-line bg-ink">
