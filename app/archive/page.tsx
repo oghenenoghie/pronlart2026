@@ -29,7 +29,7 @@ export default async function ArchivePage() {
         {artworks.length === 0 ? (
           <div className="mt-12">
             <EmptyState heading="The archive is taking shape">
-              When a work finds a new home, it remains here as part of the gallery's permanent record.
+              When a work finds a new home, it remains here as part of the gallery&apos;s permanent record.
             </EmptyState>
             <Link href="/gallery" className="mt-2 inline-flex min-h-12 items-center bg-ink px-6 font-body text-label uppercase tracking-[0.16em] text-gesso hover:bg-gilt hover:text-ink">
               Explore available works <span aria-hidden className="ml-3 text-lg">↗</span>
