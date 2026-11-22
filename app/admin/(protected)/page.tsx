@@ -63,7 +63,7 @@ export default async function AdminDashboardPage() {
           <span className="font-body text-xs text-ink/40">Live totals</span>
         </div>
         <div className="grid grid-cols-2 gap-px border border-ink/10 bg-ink/10 sm:grid-cols-4">
-          {cards.map((card, index) => (
+          {cards.map((card) => (
             <Link
               key={card.href}
               href={card.href}
