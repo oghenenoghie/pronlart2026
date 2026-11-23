@@ -123,6 +123,7 @@ export function HeroSlides({ works }: { works: Artwork[] }) {
   return (
     <section
       ref={regionRef}
+      className="relative h-full min-h-[560px] w-full overflow-hidden"
       aria-roledescription="carousel"
       aria-label="Featured works"
       onKeyDown={onKeyDown}
@@ -131,6 +132,7 @@ export function HeroSlides({ works }: { works: Artwork[] }) {
       onPointerLeave={(event) => event.pointerType === "mouse" && setHovered(false)}
     >
       <motion.div
+        className="absolute inset-0 h-full w-full"
         drag={count > 1 ? "x" : false}
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.12}
@@ -154,7 +156,7 @@ export function HeroSlides({ works }: { works: Artwork[] }) {
               dragged.current = false;
             }
           }}
-          className="group relative block aspect-[4/5] overflow-hidden border border-ink/10 bg-white transition-colors duration-300 hover:border-gilt/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gilt focus-visible:ring-offset-4 focus-visible:ring-offset-gesso md:aspect-auto md:h-[min(58vh,540px)]"
+          className="group absolute inset-0 block h-full w-full overflow-hidden bg-[#171512] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d2b47b]"
         >
           {slides.map((work, i) => {
             const image = work.images.find((img) => img.isPrimary) ?? work.images[0];
@@ -163,7 +165,7 @@ export function HeroSlides({ works }: { works: Artwork[] }) {
               <motion.div
                 key={work.id}
                 aria-hidden={!isActive}
-                className="absolute inset-0 p-5 sm:p-8"
+                className="absolute inset-0 bg-[#171512]"
                 initial={false}
                 animate={
                   isActive
@@ -180,7 +182,7 @@ export function HeroSlides({ works }: { works: Artwork[] }) {
                     sizes="(min-width: 768px) 55vw, 100vw"
                     priority={i === 0}
                     draggable={false}
-                    className="select-none object-contain transition-transform duration-700 ease-out group-hover:scale-[1.015]"
+                    className="select-none object-contain p-8 sm:p-12 lg:p-20"
                   />
                 </div>
               </motion.div>
@@ -189,7 +191,7 @@ export function HeroSlides({ works }: { works: Artwork[] }) {
         </Link>
       </motion.div>
 
-      <div className="mt-5 min-h-[6.5rem] border-b border-ink/15 pb-4 md:min-h-[5.75rem]">
+      <div className="absolute bottom-24 left-6 right-6 z-10 min-h-[5rem] max-w-xl border-b border-white/25 pb-3 sm:left-10 lg:left-16">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={active.id}
@@ -200,20 +202,20 @@ export function HeroSlides({ works }: { works: Artwork[] }) {
             className="flex flex-wrap items-start justify-between gap-4"
           >
             <div className="min-w-0">
-              <p className="font-body text-label uppercase tracking-[0.16em] text-ink/50">
+              <p className="font-body text-label uppercase tracking-[0.16em] text-[#d2b47b]">
                 Featured work
                 {count > 1 && (
-                  <span className="ml-3 tabular-nums text-ink/40">
+                  <span className="ml-3 tabular-nums text-white/55">
                     {pad(index + 1)} / {pad(count)}
                   </span>
                 )}
               </p>
-              <p className="mt-2 font-display text-xl italic text-ink">
+              <p className="mt-2 font-display text-xl italic text-white sm:text-2xl">
                 {active.title}, {active.year}
               </p>
-              <p className="mt-1 font-body text-sm text-ink/60">{active.artist.name}</p>
+              <p className="mt-1 font-body text-sm text-white/65">{active.artist.name}</p>
             </div>
-            <p className="max-w-[13rem] text-right font-body text-sm leading-6 text-ink/55">
+            <p className="max-w-[13rem] text-right font-body text-sm leading-6 text-white/65">
               {active.medium.name} <span aria-hidden>·</span> {active.dimensions}
             </p>
           </motion.div>
@@ -227,7 +229,7 @@ export function HeroSlides({ works }: { works: Artwork[] }) {
       </p>
 
       {count > 1 && (
-        <div className="mt-4 flex items-center gap-5">
+        <div className="absolute bottom-3 left-6 right-6 z-20 flex items-center gap-5 sm:left-10 lg:left-16">
           <ol className="flex flex-1 gap-2 sm:gap-3">
             {slides.map((work, i) => {
               const isActive = i === index;
@@ -238,20 +240,20 @@ export function HeroSlides({ works }: { works: Artwork[] }) {
                     onClick={() => go(i)}
                     aria-label={"Show slide " + (i + 1) + " of " + count + ": " + work.title}
                     aria-current={isActive ? "true" : undefined}
-                    className="group/dot flex min-h-11 w-full flex-col justify-center gap-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gilt focus-visible:ring-offset-2 focus-visible:ring-offset-gesso"
+                    className="group/dot flex min-h-11 w-full flex-col justify-center gap-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gilt focus-visible:ring-offset-2 focus-visible:ring-offset-[#171512]"
                   >
                     <span
                       className={cn(
                         "font-body text-[0.68rem] uppercase tabular-nums tracking-[0.14em] transition-colors duration-200",
-                        isActive ? "text-ink" : "text-ink/40 group-hover/dot:text-ink/70",
+                        isActive ? "text-white" : "text-white/45 group-hover/dot:text-white/80",
                       )}
                     >
                       {pad(i + 1)}
                     </span>
-                    <span className="relative block h-[2px] w-full overflow-hidden bg-ink/10">
+                    <span className="relative block h-[2px] w-full overflow-hidden bg-white/25">
                       {isActive && (
                         <motion.span
-                          className="absolute inset-0 origin-left bg-gilt"
+                          className="absolute inset-0 origin-left bg-[#d2b47b]"
                           style={{ scaleX: timed ? progress : 1 }}
                         />
                       )}
@@ -298,7 +300,7 @@ function ControlButton({
       type="button"
       onClick={onClick}
       aria-label={label}
-      className="-ml-px flex h-11 w-11 items-center justify-center border border-ink/15 text-ink/70 transition-colors duration-200 hover:z-10 hover:border-ink hover:text-ink focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gilt focus-visible:ring-offset-2 focus-visible:ring-offset-gesso"
+      className="-ml-px flex h-11 w-11 items-center justify-center border border-white/30 text-white/80 transition-colors duration-200 hover:z-10 hover:border-white hover:text-white focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d2b47b] focus-visible:ring-offset-2 focus-visible:ring-offset-[#171512]"
     >
       <svg
         aria-hidden
