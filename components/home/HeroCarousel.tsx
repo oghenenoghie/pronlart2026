@@ -173,7 +173,7 @@ export function HeroCarousel({ works }: { works: Artwork[] }) {
                   className="absolute inset-0 z-0 scale-[1.02] bg-cover bg-center"
                   role="img"
                   aria-label="Grand classical sculpture gallery"
-                  style={{ backgroundImage: "url('https://cdn.sanity.io/images/cctd4ker/production/3513bc5d23fe1cc24c46f03d1b3900cd3caa26ee-5120x2880.jpg?auto=format&fit=clip&q=75&w=1800')" }}
+                  style={{ backgroundImage: "url('https://upload.wikimedia.org/wikipedia/commons/a/a1/Metropolitan_Museum%2C_hall.jpg')" }}
                 />
                 <div aria-hidden className="absolute inset-0 z-10 bg-[linear-gradient(90deg,rgba(13,10,7,.72),rgba(13,10,7,.34)_48%,rgba(13,10,7,.68)),linear-gradient(0deg,rgba(10,8,6,.62),transparent_34%,rgba(10,8,6,.36))]" />
                 <div className="absolute inset-0 z-20 flex flex-col items-center justify-center px-6 pb-20 pt-24 text-center sm:px-10">
