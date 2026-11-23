@@ -21,7 +21,7 @@ export function HeroSection({ works, stats }: { works: Artwork[]; stats: HeroSta
   return (
     <section className="relative isolate min-h-[760px] overflow-hidden bg-[#101010] text-[#f7f3eb] sm:min-h-[820px] lg:min-h-[min(900px,calc(100svh-5rem))]">
       {hasSlides ? (
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 z-[1]">
           <HeroSlides works={works} />
         </div>
       ) : (
@@ -30,7 +30,7 @@ export function HeroSection({ works, stats }: { works: Artwork[]; stats: HeroSta
 
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(90deg,rgba(10,10,10,0.94)_0%,rgba(10,10,10,0.78)_34%,rgba(10,10,10,0.25)_72%,rgba(10,10,10,0.16)_100%),linear-gradient(0deg,rgba(8,8,8,0.76)_0%,transparent_34%,rgba(8,8,8,0.12)_100%)]"
+        className="pointer-events-none absolute inset-0 z-[2] bg-[linear-gradient(90deg,rgba(10,10,10,0.94)_0%,rgba(10,10,10,0.78)_34%,rgba(10,10,10,0.25)_72%,rgba(10,10,10,0.16)_100%),linear-gradient(0deg,rgba(8,8,8,0.76)_0%,transparent_34%,rgba(8,8,8,0.12)_100%)]"
       />
 
       <div className="relative z-10 mx-auto flex min-h-[760px] max-w-[1600px] flex-col justify-center px-6 pb-36 pt-28 sm:min-h-[820px] sm:px-10 lg:min-h-[min(900px,calc(100svh-5rem))] lg:px-16">
