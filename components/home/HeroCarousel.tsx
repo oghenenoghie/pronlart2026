@@ -3,7 +3,11 @@
 import Link from "next/link";
 import type { Artwork } from "@/types";
 
-export function HeroCarousel({ works: _works }: { works: Artwork[] }) {
+export function HeroCarousel({ works }: { works: Artwork[] }) {
+  // Keep the existing component contract; the static editorial hero does not
+  // need to consume the featured artwork list.
+  void works;
+
   return (
     <section className="relative isolate min-h-[min(780px,calc(100svh-5rem))] overflow-hidden border-b border-line bg-[#100d09] sm:min-h-[min(860px,calc(100svh-5rem))]">
       <div
