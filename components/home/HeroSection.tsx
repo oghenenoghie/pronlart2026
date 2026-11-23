@@ -19,14 +19,12 @@ export function HeroSection({ works, stats }: { works: Artwork[]; stats: HeroSta
   const hasSlides = works.some((work) => work.images.length > 0);
 
   return (
-    <section className="relative isolate min-h-[760px] overflow-hidden bg-[#101010] text-[#f7f3eb] sm:min-h-[820px] lg:min-h-[min(900px,calc(100svh-5rem))]">
+    <section className="relative isolate min-h-[760px] overflow-hidden bg-transparent text-[#f7f3eb] sm:min-h-[820px] lg:min-h-[min(900px,calc(100svh-5rem))]">
       {hasSlides ? (
         <div className="absolute inset-0 z-[1]">
           <HeroSlides works={works} />
         </div>
-      ) : (
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_72%_48%,rgba(184,145,83,0.22),transparent_45%),linear-gradient(120deg,#101010,#25211c)]" />
-      )}
+      ) : null}
 
       <div
         aria-hidden
