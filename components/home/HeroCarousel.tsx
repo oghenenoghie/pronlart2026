@@ -165,33 +165,8 @@ export function HeroCarousel({ works }: { works: Artwork[] }) {
   return (
     <>
       <section className="relative overflow-hidden border-b border-line bg-ink">
-        <div className="mx-auto max-w-[1440px] px-5 pb-10 pt-8 sm:px-8 sm:pb-14 lg:px-12 lg:pt-10">
-          <div className="flex flex-col justify-between gap-5 border-b border-line pb-5 sm:flex-row sm:items-end">
-            <div>
-              <p className="font-body text-[0.65rem] uppercase tracking-[0.22em] text-gilt">The Pronlart collection</p>
-              <h1 className="mt-3 max-w-3xl font-display text-[clamp(2.6rem,6vw,5.8rem)] leading-[0.98] text-gesso">Art deserves <em className="font-normal">room</em> to breathe.</h1>
-            </div>
-            <p className="max-w-xs font-body text-sm leading-6 text-ash">Original paintings, sculpture and bronze. A considered journey through artists, movements and material.</p>
-          </div>
-
-          <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-            <p className="font-body text-[0.62rem] uppercase tracking-[0.18em] text-ash">Explore five ways to experience the gallery</p>
-            <div className="flex flex-wrap gap-1.5" role="group" aria-label="Hero presentation styles">
-              {HERO_STYLES.map((item, index) => (
-                <button
-                  key={item.name}
-                  type="button"
-                  onClick={() => setActiveStyle(index)}
-                  aria-pressed={activeStyle === index}
-                  className={`border px-3 py-2 font-body text-[0.6rem] uppercase tracking-[0.14em] transition-colors sm:px-4 ${activeStyle === index ? "border-gilt bg-gilt text-ink" : "border-line text-ash hover:border-gilt hover:text-gesso"}`}
-                >
-                  <span className="mr-1.5 opacity-60">0{index + 1}</span>{item.name}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className={`relative mt-5 min-h-[min(780px,calc(100svh-5rem))] overflow-hidden border border-line sm:min-h-[min(860px,calc(100svh-5rem))] ${transition}`}>
+        <div className="w-full px-0 pb-0 pt-0">
+          <div className={`relative min-h-[min(780px,calc(100svh-5rem))] overflow-hidden sm:min-h-[min(860px,calc(100svh-5rem))] ${transition}`}>
             {activeStyle === 0 && (
               <div className="absolute inset-0 isolate min-h-[min(780px,calc(100svh-5rem))] bg-[#100d09]">
                 <div
@@ -267,13 +242,17 @@ export function HeroCarousel({ works }: { works: Artwork[] }) {
             )}
           </div>
 
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-            <p className="font-body text-xs text-ash">{HERO_STYLES[activeStyle].note}</p>
-            <div className="flex items-center gap-2">
-              <button onClick={() => setActiveWork((activeWork - 1 + works.length) % works.length)} className="border border-line px-4 py-2 font-body text-xs text-gesso hover:border-gilt" aria-label="Previous featured artwork">←</button>
-              <span className="min-w-14 text-center font-body text-[0.65rem] tabular-nums tracking-[0.16em] text-ash">0{activeWork + 1} / 0{works.length}</span>
-              <button onClick={() => setActiveWork((activeWork + 1) % works.length)} className="border border-line px-4 py-2 font-body text-xs text-gesso hover:border-gilt" aria-label="Next featured artwork">→</button>
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line bg-ink px-5 py-4 sm:px-8">
+            <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Hero presentation styles">
+              <span className="mr-2 font-body text-[0.58rem] uppercase tracking-[0.18em] text-ash">Hero style</span>
+              {HERO_STYLES.map((item, index) => (
+                <button key={item.name} type="button" onClick={() => setActiveStyle(index)} aria-pressed={activeStyle === index} className={`border px-3 py-2 font-body text-[0.58rem] uppercase tracking-[0.13em] transition-colors ${activeStyle === index ? "border-gilt bg-gilt text-ink" : "border-line text-ash hover:border-gilt hover:text-gesso"}`}>
+                  0{index + 1} {item.name}
+                </button>
+              ))}
             </div>
+            <span className="font-body text-xs text-ash">{HERO_STYLES[activeStyle].note}</span>
+          </div>
           </div>
         </div>
       </section>
