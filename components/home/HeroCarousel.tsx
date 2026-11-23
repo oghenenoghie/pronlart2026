@@ -43,7 +43,7 @@ export function HeroCarousel({ works }: { works: Artwork[] }) {
 
           <div className="mt-14 grid max-w-md grid-cols-3 gap-5 border-t border-line pt-6">
             <div>
-              <p className="font-display text-3xl text-gesso">01</p>
+              <p className="font-display text-3xl text-gesso">09</p>
               <p className="mt-2 font-body text-[0.57rem] uppercase tracking-[0.16em] text-ash">
                 Original works
               </p>
