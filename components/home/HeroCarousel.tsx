@@ -253,7 +253,6 @@ export function HeroCarousel({ works }: { works: Artwork[] }) {
             </div>
             <span className="font-body text-xs text-ash">{HERO_STYLES[activeStyle].note}</span>
           </div>
-          </div>
         </div>
       </section>
       {isOpen && <ArtworkModal artwork={current} style={modalStyle} onStyleChange={setModalStyle} onClose={closeViewer} />}
