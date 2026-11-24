@@ -156,7 +156,7 @@ export function HeroSlides({ works }: { works: Artwork[] }) {
               dragged.current = false;
             }
           }}
-          className="group absolute inset-0 block h-full w-full overflow-hidden bg-[#171512] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d2b47b]"
+          className="group absolute inset-0 block h-full w-full overflow-hidden bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d2b47b]"
         >
           {slides.map((work, i) => {
             const image = work.images.find((img) => img.isPrimary) ?? work.images[0];
@@ -165,7 +165,7 @@ export function HeroSlides({ works }: { works: Artwork[] }) {
               <motion.div
                 key={work.id}
                 aria-hidden={!isActive}
-                className="absolute inset-0 bg-[#171512]"
+                className="absolute inset-0 bg-transparent"
                 initial={false}
                 animate={
                   isActive
