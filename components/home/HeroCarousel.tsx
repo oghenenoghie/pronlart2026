@@ -7,21 +7,7 @@ export function HeroCarousel({ works }: { works: Artwork[] }) {
   const totalWorks = works.length;
 
   return (
-    <section className="relative isolate min-h-[min(780px,calc(100svh-5rem))] overflow-hidden border-b border-line bg-[#100d09] sm:min-h-[min(860px,calc(100svh-5rem))]">
-      <div
-        className="absolute inset-0 -z-20 scale-[1.02] bg-cover bg-center"
-        role="img"
-        aria-label="Grand classical sculpture gallery"
-        style={{
-          backgroundImage:
-            "url('https://upload.wikimedia.org/wikipedia/commons/a/a1/Metropolitan_Museum%2C_hall.jpg')",
-        }}
-      />
-      <div
-        aria-hidden
-        className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(13,10,7,.76),rgba(13,10,7,.38)_52%,rgba(13,10,7,.58)),linear-gradient(0deg,rgba(10,8,6,.72),transparent_36%,rgba(10,8,6,.3))]"
-      />
-
+    <section className="relative isolate min-h-[min(780px,calc(100svh-5rem))] overflow-hidden border-b border-line sm:min-h-[min(860px,calc(100svh-5rem))]">
       <div className="flex min-h-[inherit] flex-col items-center justify-center px-6 pb-24 pt-24 text-center sm:px-10">
         <p className="font-body text-[0.65rem] uppercase tracking-[0.34em] text-gesso/85">
           B-Edge Artworks · Original art &amp; timeless expression
