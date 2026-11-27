@@ -24,15 +24,8 @@ const SWIPE_VELOCITY = 400;
 const pad = (n: number) => String(n).padStart(2, "0");
 
 /**
- * Featured-work slideshow for the home hero. Works crossfade inside a white
- * matte (shown whole, never cropped) while a hairline under each slide number
- * fills to show time until the next work.
- *
- * Rotation follows the WAI carousel pattern: it pauses while a mouse is over
- * it, while it is off-screen or the tab is hidden, stops for good once a
- * keyboard user focuses inside it (until they press play), and never starts
- * under prefers-reduced-motion. Arrow keys, the numbered controls and
- * horizontal swipes all change slides.
+ * Full-bleed featured-work carousel for the home hero. Artwork is shown whole
+ * on a light matte, with captions and controls overlaid at the bottom.
  */
 export function HeroSlides({ works }: { works: Artwork[] }) {
   const slides = works.filter((work) => work.images.length > 0);
@@ -66,7 +59,6 @@ export function HeroSlides({ works }: { works: Artwork[] }) {
     return () => document.removeEventListener("visibilitychange", onVisibility);
   }, []);
 
-  // Declared before the timer effect so a new timer sees the latest state.
   useEffect(() => {
     runningRef.current = running;
     const current = controls.current;
@@ -75,8 +67,6 @@ export function HeroSlides({ works }: { works: Artwork[] }) {
     else current.pause();
   }, [running]);
 
-  // One linear 0→1 timer per slide drives the progress hairline as a motion
-  // value (no per-frame React state) and advances the slide when it finishes.
   useEffect(() => {
     if (count < 2) return;
     progress.set(0);
@@ -109,7 +99,6 @@ export function HeroSlides({ works }: { works: Artwork[] }) {
   }
 
   function onFocus(event: React.FocusEvent) {
-    // Keyboard focus stops rotation until the visitor presses play again.
     if (event.target instanceof HTMLElement && event.target.matches(":focus-visible")) {
       setStopped(true);
     }
@@ -123,6 +112,7 @@ export function HeroSlides({ works }: { works: Artwork[] }) {
   return (
     <section
       ref={regionRef}
+      className="relative h-full min-h-[560px] w-full overflow-hidden"
       aria-roledescription="carousel"
       aria-label="Featured works"
       onKeyDown={onKeyDown}
@@ -131,6 +121,7 @@ export function HeroSlides({ works }: { works: Artwork[] }) {
       onPointerLeave={(event) => event.pointerType === "mouse" && setHovered(false)}
     >
       <motion.div
+        className="absolute inset-0 h-full w-full"
         drag={count > 1 ? "x" : false}
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.12}
@@ -154,7 +145,7 @@ export function HeroSlides({ works }: { works: Artwork[] }) {
               dragged.current = false;
             }
           }}
-          className="group relative block aspect-[4/5] overflow-hidden border border-ink/10 bg-white transition-colors duration-300 hover:border-gilt/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gilt focus-visible:ring-offset-4 focus-visible:ring-offset-gesso md:aspect-auto md:h-[min(58vh,540px)]"
+          className="group absolute inset-0 block h-full w-full overflow-hidden bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gilt"
         >
           {slides.map((work, i) => {
             const image = work.images.find((img) => img.isPrimary) ?? work.images[0];
@@ -163,7 +154,7 @@ export function HeroSlides({ works }: { works: Artwork[] }) {
               <motion.div
                 key={work.id}
                 aria-hidden={!isActive}
-                className="absolute inset-0 p-5 sm:p-8"
+                className="absolute inset-0"
                 initial={false}
                 animate={
                   isActive
@@ -172,24 +163,22 @@ export function HeroSlides({ works }: { works: Artwork[] }) {
                 }
                 transition={{ duration: reduce ? 0.2 : 0.9, ease: EASE }}
               >
-                <div className="relative h-full w-full">
-                  <Image
-                    src={image.path}
-                    alt={isActive ? image.alt : ""}
-                    fill
-                    sizes="(min-width: 768px) 55vw, 100vw"
-                    priority={i === 0}
-                    draggable={false}
-                    className="select-none object-contain transition-transform duration-700 ease-out group-hover:scale-[1.015]"
-                  />
-                </div>
+                <Image
+                  src={image.path}
+                  alt={isActive ? image.alt : ""}
+                  fill
+                  sizes="100vw"
+                  priority={i === 0}
+                  draggable={false}
+                  className="select-none object-contain p-8 sm:p-12 lg:p-20"
+                />
               </motion.div>
             );
           })}
         </Link>
       </motion.div>
 
-      <div className="mt-5 min-h-[6.5rem] border-b border-ink/15 pb-4 md:min-h-[5.75rem]">
+      <div className="absolute bottom-24 left-6 right-6 z-10 min-h-[5rem] max-w-xl border-b border-ink/20 pb-3 sm:left-10 lg:left-16">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={active.id}
@@ -200,20 +189,20 @@ export function HeroSlides({ works }: { works: Artwork[] }) {
             className="flex flex-wrap items-start justify-between gap-4"
           >
             <div className="min-w-0">
-              <p className="font-body text-label uppercase tracking-[0.16em] text-ink/50">
+              <p className="font-body text-label uppercase tracking-[0.16em] text-ink/55">
                 Featured work
                 {count > 1 && (
-                  <span className="ml-3 tabular-nums text-ink/40">
+                  <span className="ml-3 tabular-nums text-ink/45">
                     {pad(index + 1)} / {pad(count)}
                   </span>
                 )}
               </p>
-              <p className="mt-2 font-display text-xl italic text-ink">
+              <p className="mt-2 font-display text-xl italic text-ink sm:text-2xl">
                 {active.title}, {active.year}
               </p>
-              <p className="mt-1 font-body text-sm text-ink/60">{active.artist.name}</p>
+              <p className="mt-1 font-body text-sm text-ink/65">{active.artist.name}</p>
             </div>
-            <p className="max-w-[13rem] text-right font-body text-sm leading-6 text-ink/60">
+            <p className="max-w-[13rem] text-right font-body text-sm leading-6 text-ink/65">
               {active.medium.name} <span aria-hidden>·</span> {active.dimensions}
             </p>
           </motion.div>
@@ -227,7 +216,7 @@ export function HeroSlides({ works }: { works: Artwork[] }) {
       </p>
 
       {count > 1 && (
-        <div className="mt-4 flex items-center gap-5">
+        <div className="absolute bottom-3 left-6 right-6 z-20 flex items-center gap-5 sm:left-10 lg:left-16">
           <ol className="flex flex-1 gap-2 sm:gap-3">
             {slides.map((work, i) => {
               const isActive = i === index;
@@ -298,7 +287,7 @@ function ControlButton({
       type="button"
       onClick={onClick}
       aria-label={label}
-      className="-ml-px flex h-11 w-11 items-center justify-center border border-ink/15 text-ink/70 transition-colors duration-200 hover:z-10 hover:border-ink hover:text-ink focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d2b47b] focus-visible:ring-offset-2 focus-visible:ring-offset-gesso"
+      className="-ml-px flex h-11 w-11 items-center justify-center border border-ink/15 text-ink/70 transition-colors duration-200 hover:z-10 hover:border-ink hover:text-ink focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gilt focus-visible:ring-offset-2 focus-visible:ring-offset-gesso"
     >
       <svg
         aria-hidden
@@ -309,7 +298,7 @@ function ControlButton({
         strokeWidth={1.5}
         strokeLinecap="round"
         strokeLinejoin="round"
-      >
+        >
         {children}
       </svg>
     </button>
