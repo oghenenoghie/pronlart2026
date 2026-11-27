@@ -178,7 +178,7 @@ export function HeroSlides({ works }: { works: Artwork[] }) {
         </Link>
       </motion.div>
 
-      <div className="absolute bottom-24 left-6 right-6 z-10 min-h-[5rem] max-w-xl border-b border-ink/20 pb-3 sm:left-10 lg:left-16">
+      <div className="absolute bottom-24 right-6 left-auto z-10 min-h-[5rem] max-w-[30rem] border-b border-ink/20 pb-3 text-right sm:right-10 lg:right-16">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={active.id}
@@ -186,7 +186,7 @@ export function HeroSlides({ works }: { works: Artwork[] }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: reduce ? 0 : -6 }}
             transition={{ duration: reduce ? 0.15 : 0.4, ease: EASE }}
-            className="flex flex-wrap items-start justify-between gap-4"
+            className="flex flex-wrap items-start justify-end gap-4"
           >
             <div className="min-w-0">
               <p className="font-body text-label uppercase tracking-[0.16em] text-ink/55">
@@ -216,7 +216,7 @@ export function HeroSlides({ works }: { works: Artwork[] }) {
       </p>
 
       {count > 1 && (
-        <div className="absolute bottom-3 left-6 right-6 z-20 flex items-center gap-5 sm:left-10 lg:left-16">
+        <div className="absolute bottom-3 right-6 left-auto z-20 flex items-center gap-5 sm:right-10 lg:right-16">
           <ol className="flex flex-1 gap-2 sm:gap-3">
             {slides.map((work, i) => {
               const isActive = i === index;
