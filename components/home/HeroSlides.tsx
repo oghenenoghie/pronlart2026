@@ -123,7 +123,6 @@ export function HeroSlides({ works }: { works: Artwork[] }) {
   return (
     <section
       ref={regionRef}
-      className="relative h-full min-h-[560px] w-full overflow-hidden"
       aria-roledescription="carousel"
       aria-label="Featured works"
       onKeyDown={onKeyDown}
@@ -132,7 +131,6 @@ export function HeroSlides({ works }: { works: Artwork[] }) {
       onPointerLeave={(event) => event.pointerType === "mouse" && setHovered(false)}
     >
       <motion.div
-        className="absolute inset-0 h-full w-full"
         drag={count > 1 ? "x" : false}
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.12}
