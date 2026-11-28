@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { playfair, inter, cormorant } from "@/lib/fonts";
 import { LenisProvider } from "@/components/motion/LenisProvider";
 import { Grain } from "@/components/common/Grain";
+import { FestiveWelcome } from "@/components/common/FestiveWelcome";
 import { Header } from "@/components/common/Header";
 import { Footer } from "@/components/common/Footer";
 import "./globals.css";
@@ -24,6 +25,7 @@ export default function RootLayout({
     <html lang="en" className={`${playfair.variable} ${inter.variable} ${cormorant.variable}`}>
       <body className="flex min-h-screen flex-col bg-ink font-body text-gesso antialiased">
         <LenisProvider>
+          <FestiveWelcome />
           <Header />
           <div className="flex-1">{children}</div>
           <Footer />
