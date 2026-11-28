@@ -19,10 +19,8 @@ function clamp01(value: number) {
 
 /**
  * The signature cinematic exhibition: featured works pinned full-viewport,
- * each resolving into focus and handing off to the next as the visitor
- * scrolls. A single scroll-linked progress value (0-1 across the whole
- * section) drives every slide's opacity/scale/blur/parallax, so adjacent
- * works crossfade continuously with no dead zones between them.
+ * each displayed cleanly as the visitor scrolls. Artwork remains sharp and
+ * undistorted; only slide visibility changes during the hand-off.
  */
 export function ExhibitionScroll({ works }: { works: Artwork[] }) {
   const reduce = useReducedMotion();
@@ -54,16 +52,10 @@ export function ExhibitionScroll({ works }: { works: Artwork[] }) {
           const center = (i + 0.5) * segment;
           const distance = clamp01(Math.abs(progress - center) / segment);
           const opacity = 1 - distance;
-          const resolve = clamp01(1 - distance / 0.3);
-
-          gsap.set(frame, {
-            opacity,
-            scale: 1 + (1 - resolve) * 0.06,
-            filter: `blur(${(1 - resolve) * 12}px)`,
-          });
+          gsap.set(frame, { opacity, scale: 1 });
           gsap.set(text, {
             opacity: clamp01((opacity - 0.6) / 0.4),
-            y: (1 - resolve) * 16,
+            y: 0,
           });
         });
       },
@@ -78,25 +70,6 @@ export function ExhibitionScroll({ works }: { works: Artwork[] }) {
     lenis.on("scroll", update);
     return () => lenis.off("scroll", update);
   }, [lenis, canAnimate]);
-
-  useEffect(() => {
-    if (!canAnimate) return;
-    const isFinePointer = window.matchMedia("(pointer: fine)").matches;
-    if (!isFinePointer) return;
-
-    const setters = frameRefs.current.map((el) => (el ? gsap.quickTo(el, "x", { duration: 0.6, ease: "power3.out" }) : null));
-    const settersY = frameRefs.current.map((el) => (el ? gsap.quickTo(el, "y", { duration: 0.6, ease: "power3.out" }) : null));
-
-    function handleMove(e: MouseEvent) {
-      const relX = e.clientX / window.innerWidth - 0.5;
-      const relY = e.clientY / window.innerHeight - 0.5;
-      setters.forEach((set) => set?.(relX * 16));
-      settersY.forEach((set) => set?.(relY * 16));
-    }
-
-    window.addEventListener("mousemove", handleMove);
-    return () => window.removeEventListener("mousemove", handleMove);
-  }, [canAnimate]);
 
   if (!canAnimate) {
     return (
