@@ -41,17 +41,13 @@ export function ExhibitionSpotlight({
 
         <Reveal>
           <div className="mt-16 grid grid-cols-2 gap-px border border-line bg-line sm:grid-cols-4 md:grid-cols-7">
-            {movements.map((movement, i) => (
+            {movements.map((movement) => (
               <Link
                 key={movement.slug}
                 href={`/movements/${movement.slug}`}
                 className="flex aspect-[4/3] flex-col justify-end bg-ink"
               >
-                <span
-                  className={cn(
-                    "p-3 text-left font-body text-[0.7rem] uppercase leading-tight tracking-[0.12em] text-gesso",
-                  )}
-                >
+                <span className="p-3 text-left font-body text-[0.7rem] uppercase leading-tight tracking-[0.12em] text-gesso">
                   {movement.name}
                 </span>
               </Link>
